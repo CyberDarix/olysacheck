@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>olysacheck - Authentification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --light: #e8eef2;
+            --white: #ffffff;
+            --error: #c44536;
+            --success: #2d6a4f;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f4c75 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--primary);
+            overflow-x: hidden;
+        }
+
+        /* Header avec profil */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info.active {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .user-email {
+            color: var(--light);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--white);
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--white);
+        }
+
+        /* Container principal */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 2rem;
+        }
+
+        .auth-container {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 2px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 480px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--secondary);
+            letter-spacing: 0.3px;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 2px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 2px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 76, 117, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Messages */
+        .message {
+            padding: 0.9rem 1rem;
+            border-radius: 2px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background: #fdecea;
+            color: var(--error);
+            border-left: 3px solid var(--error);
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: var(--success);
+            border-left: 3px solid var(--success);
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .dashboard.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .dashboard h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .dashboard p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .welcome-email {
+            color: var(--accent);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem 1.5rem;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .auth-container {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .user-email {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">olysacheck</div>
+        <div class="user-menu">
+            <div class="user-info" id="userInfo">
+                <span class="user-email" id="userEmail"></span>
+                <button class="btn-logout" id="btnLogout">Déconnexion</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-container" id="authContainer">
+            <div class="auth-header">
+                <h1>olysacheck</h1>
+                <p class="subtitle">Plateforme professionnelle de gestion</p>
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="login">Connexion</button>
+                <button class="tab" data-tab="register">Créer un compte</button>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Adresse email</label>
+                    <input type="email" id="loginEmail" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-submit">Se connecter</button>
+            </form>
+
+            <form id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label for="registerName">Nom complet</label>
+                    <input type="text" id="registerName" required autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Adresse email</label>
+                    <input type="email" id="registerEmail" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" required minlength="6" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmer le mot de passe</label>
+                    <input type="password" id="registerPasswordConfirm" required minlength="6" autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-submit">Créer mon compte</button>
+            </form>
+
+            <div class="dashboard" id="dashboard">
+                <h2>Bienvenue sur olysacheck</h2>
+                <p>Vous êtes connecté avec succès</p>
+                <p class="welcome-email" id="welcomeEmail"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Gestion de l'état de l'application
+        const app = {
+            currentUser: null,
+
+            init() {
+                this.checkAuth();
+                this.setupEventListeners();
+            },
+
+            checkAuth() {
+                const user = localStorage.getItem('olysacheck_user');
+                if (user) {
+                    this.currentUser = JSON.parse(user);
+                    this.showDashboard();
+                }
+            },
+
+            setupEventListeners() {
+                // Tabs
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+
+                // Forms
+                document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+                document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
+                document.getElementById('btnLogout').addEventListener('click', () => this.handleLogout());
+            },
+
+            switchTab(tabName) {
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabName);
+                });
+
+                // Show/hide forms
+                document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
+                document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
+                
+                this.hideMessage();
+            },
+
+            handleLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                // Récupérer les utilisateurs stockés
+                const users = JSON.parse(localStorage.getItem('olysacheck_users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (user) {
+                    this.currentUser = { name: user.name, email: user.email };
+                    localStorage.setItem('olysacheck_user', JSON.stringify(this.currentUser));
+                    this.showMessage('Connexion réussie', 'success');
+                    setTimeout(() => this.showDashboard(), 800);
+                } else {
+                    this.showMessage('Email ou mot de passe incorrect', 'error');
+                }
+            },
+
+            handleRegister(e) {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+                if (password !== passwordConfirm) {
+                    this.showMessage('Les mots de passe ne correspondent pas', 'error');
+                    return;
+                }
+
+                // Vérifier si l'email existe déjà
+                const users = JSON.parse(localStorage.getItem('olysacheck_users') || '[]');
+                if (users.some(u => u.email === email)) {
+                    this.showMessage('Cette adresse email est déjà utilisée', 'error');
+                    return;
+                }
+
+                // Créer le nouveau compte
+                users.push({ name, email, password });
+                localStorage.setItem('olysacheck_users', JSON.stringify(users));
+
+                this.currentUser = { name, email };
+                localStorage.setItem('olysacheck_user', JSON.stringify(this.currentUser));
+
+                this.showMessage('Compte créé avec succès', 'success');
+                setTimeout(() => this.showDashboard(), 800);
+            },
+
+            handleLogout() {
+                localStorage.removeItem('olysacheck_user');
+                this.currentUser = null;
+                this.showAuthForms();
+                this.showMessage('Déconnexion réussie', 'success');
+            },
+
+            showDashboard() {
+                document.getElementById('authContainer').querySelector('.auth-header').style.display = 'none';
+                document.querySelector('.tabs').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                document.getElementById('welcomeEmail').textContent = this.currentUser.email;
+                
+                // Afficher le menu utilisateur
+                document.getElementById('userInfo').classList.add('active');
+                document.getElementById('userEmail').textContent = this.currentUser.email;
+            },
+
+            showAuthForms() {
+                document.getElementById('authContainer').querySelector('.auth-header').style.display = 'block';
+                document.querySelector('.tabs').style.display = 'flex';
+                document.getElementById('dashboard').classList.remove('active');
+                document.getElementById('userInfo').classList.remove('active');
+                this.switchTab('login');
+                
+                // Reset forms
+                document.getElementById('loginForm').reset();
+                document.getElementById('registerForm').reset();
+            },
+
+            showMessage(text, type) {
+                const message = document.getElementById('message');
+                message.textContent = text;
+                message.className = `message ${type} show`;
+            },
+
+            hideMessage() {
+                document.getElementById('message').classList.remove('show');
+            }
+        };
+
+        // Initialiser l'application
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+	<script src="security-protection.js"></script>
+</body>
+</html>
