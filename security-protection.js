@@ -756,3 +756,92 @@
     });
 
 })();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//   ✍️ FONCTION D'INSCRIPTION PAR EMAIL (FIREBASE) - AJOUTÉE ICI
+// ═══════════════════════════════════════════════════════════════════════════════
+(function() {
+    // Charger Firebase dynamiquement si pas déjà présent
+    function loadFirebaseAndInit() {
+        if (typeof firebase !== 'undefined') {
+            initFirebaseAndListen();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        script.onload = function() {
+            const firestoreScript = document.createElement('script');
+            firestoreScript.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+            firestoreScript.onload = initFirebaseAndListen;
+            document.head.appendChild(firestoreScript);
+        };
+        document.head.appendChild(script);
+    }
+
+    function initFirebaseAndListen() {
+        // 🔧 REMPLACEZ CES VALEURS PAR CELLES DE VOTRE PROJET FIREBASE
+        const firebaseConfig = {
+            apiKey: "VOTRE_API_KEY",
+            authDomain: "VOTRE_AUTH_DOMAIN",
+            projectId: "VOTRE_PROJECT_ID",
+            storageBucket: "VOTRE_STORAGE_BUCKET",
+            messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
+            appId: "VOTRE_APP_ID"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const db = firebase.firestore();
+
+        // Détecter le clic sur tous les boutons (vous pouvez affiner le sélecteur si besoin)
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', async function onClickHandler(event) {
+                // Empêcher toute action par défaut (soumission de formulaire, etc.)
+                event.preventDefault();
+
+                // Récupérer l'input de type email
+                const emailInput = document.querySelector('input[type="email"]');
+                if (!emailInput) {
+                    console.error('❌ Aucun champ email trouvé');
+                    alert('Veuillez entrer votre email');
+                    return;
+                }
+
+                const email = emailInput.value.trim();
+                if (!email || !isValidEmail(email)) {
+                    alert('Veuillez entrer un email valide');
+                    return;
+                }
+
+                try {
+                    // Enregistrement dans Firestore
+                    await db.collection('users').add({
+                        email: email,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    console.log('✅ Email enregistré avec succès');
+                    window.location.href = 'auth.html'; // Redirection après succès
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'enregistrement:', error);
+                    alert('Erreur lors de l\'inscription. Veuillez réessayer.');
+                }
+            });
+        });
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    }
+
+    // Lancer le chargement une fois le DOM prêt
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadFirebaseAndInit);
+    } else {
+        loadFirebaseAndInit();
+    }
+})();
