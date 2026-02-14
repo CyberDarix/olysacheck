@@ -758,7 +758,7 @@
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//   ✍️ FONCTION D'INSCRIPTION PAR EMAIL (FIREBASE) - AJOUTÉE ICI
+//   ✍️ FONCTION D'INSCRIPTION PAR EMAIL (FIREBASE)
 // ═══════════════════════════════════════════════════════════════════════════════
 (function() {
     // Charger Firebase dynamiquement si pas déjà présent
@@ -782,12 +782,12 @@
     function initFirebaseAndListen() {
         // 🔧 REMPLACEZ CES VALEURS PAR CELLES DE VOTRE PROJET FIREBASE
         const firebaseConfig = {
-            apiKey: "VOTRE_API_KEY",
-            authDomain: "VOTRE_AUTH_DOMAIN",
-            projectId: "VOTRE_PROJECT_ID",
-            storageBucket: "VOTRE_STORAGE_BUCKET",
-            messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
-            appId: "VOTRE_APP_ID"
+            apiKey: "AIzaSyBYHmmhHUaazXwbEbiEHYl0JgNUWKn6fuQ",                // <-- À remplacer
+            authDomain: "olysacheck.firebaseapp.com",        // <-- À remplacer
+            projectId: "olysacheck",          // <-- À remplacer
+            storageBucket: "olysacheck.firebasestorage.app",  // <-- À remplacer
+            messagingSenderId: "45624836935", // <-- À remplacer
+            appId: "1:45624836935:web:0cab6668ebf2aa63c04262"                    // <-- À remplacer
         };
 
         if (!firebase.apps.length) {
@@ -796,10 +796,10 @@
 
         const db = firebase.firestore();
 
-        // Détecter le clic sur tous les boutons (vous pouvez affiner le sélecteur si besoin)
+        // Détecter le clic sur tous les boutons
         document.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', async function onClickHandler(event) {
-                // Empêcher toute action par défaut (soumission de formulaire, etc.)
+                // Empêcher toute action par défaut
                 event.preventDefault();
 
                 // Récupérer l'input de type email
