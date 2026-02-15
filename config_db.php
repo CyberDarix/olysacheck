@@ -4,7 +4,7 @@ $host = "localhost";
 $port = "5432";
 $dbname = "olysacore";
 $user = "postgres";
-$password = "Kacem2012henni76600@"; // <--- METS TON VRAI MOT DE PASSE ICI
+$password = "MOT_DE_PASSE_SECRET"; // <--- METS TON VRAI MOT DE PASSE ICI
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;user=$user;password=$password";
@@ -27,4 +27,5 @@ try {
     // Si ça rate, on affiche l'erreur pour comprendre pourquoi
     echo "Erreur de connexion : " . $e->getMessage();
 }
+
 ?>
