@@ -10,7 +10,7 @@
     <meta name="keywords" content="sécurité, vérification, OlysaCheck, analyse en ligne, protection données">
     <meta name="author" content="OlysaCheck">
 
-    <!-- Google / Search Console Tag (exemple, à personnaliser) -->
+    <!-- Google / Search Console Tag -->
     <meta name="google-site-verification" content="2o7PT17f2xEwaezqa8n4senbFdhQpGdZY2NvdcAhXbs" />
 
     <!-- Icônes et style (existant) -->
@@ -27,7 +27,7 @@
         <section>
             <h2>Bienvenue sur OlysaCheck</h2>
             <p>Outil intelligent de vérification et de protection en ligne.</p>
-            <!-- Ajout d'aria-label sur les boutons pour accessibilité -->
+            <!-- Boutons avec aria-label pour accessibilité -->
             <button aria-label="Lancer une vérification de sécurité">Vérifier maintenant</button>
             <button aria-label="Accéder aux paramètres de votre compte">Paramètres</button>
             <button aria-label="Obtenir de l'aide et du support">Aide</button>
@@ -38,21 +38,97 @@
         <p>&copy; 2025 OlysaCheck. Tous droits réservés.</p>
     </footer>
 
-    <!-- Scripts JavaScript avec defer pour améliorer les performances (thread principal libéré) -->
+    <!-- Scripts JavaScript avec defer (performances) -->
     <script src="script.js" defer></script>
     <!-- Si tu as d'autres scripts, ajoute-les aussi avec defer, exemple :
     <script src="autre-script.js" defer></script>
     -->
 
-    <!-- Protection existante (exemple : anti-inspection, etc.) - conservée intacte -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         🛡️ PROTECTIONS EXISTANTES + AJOUTS SÉCURISÉS
+         ═════════════════════════════════════════════════════════════ -->
     <script>
-        // TES SCRIPTS DE PROTECTION ACTUELS (rien n'a été supprimé)
-        // Exemple : protection contre l'inspection, console log, etc.
+        // ===== TON SCRIPT DE PROTECTION ORIGINAL (conservé intact) =====
         (function() {
             // Détection ouverture des outils de développement (exemple basique)
             console.log("Protection OlysaCheck active");
             // ... tes autres protections restent ici ...
         })();
+
+        // ===== AJOUTS SÉCURISÉS (rien n'est supprimé, seulement enrichi) =====
+        (function() {
+            "use strict";
+
+            // 🔒 Blocage du clic droit
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                console.log('🚫 Clic droit bloqué (sécurité)');
+            });
+
+            // 🔒 Blocage des raccourcis clavier sensibles (F12, Ctrl+U, etc.)
+            document.addEventListener('keydown', (e) => {
+                // F12
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    console.log('🚫 F12 bloqué');
+                }
+                // Ctrl+U (afficher source)
+                if (e.ctrlKey && e.key === 'u') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+U bloqué');
+                }
+                // Ctrl+Shift+I (outils développeur)
+                if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+Shift+I bloqué');
+                }
+                // Ctrl+Shift+J (console)
+                if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+Shift+J bloqué');
+                }
+                // Ctrl+Shift+C (inspecter)
+                if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+Shift+C bloqué');
+                }
+            });
+
+            // 🔒 Détection basique des DevTools (par redimensionnement)
+            let devtoolsOpen = false;
+            const checkDevTools = () => {
+                const widthThreshold = window.outerWidth - window.innerWidth > 160;
+                const heightThreshold = window.outerHeight - window.innerHeight > 160;
+                if ((widthThreshold || heightThreshold) && !devtoolsOpen) {
+                    devtoolsOpen = true;
+                    console.log('🚨 DevTools détecté !');
+                    // Tu peux ajouter une action ici (redirection, affichage message)
+                } else if (!(widthThreshold || heightThreshold)) {
+                    devtoolsOpen = false;
+                }
+            };
+            setInterval(checkDevTools, 1000);
+
+            // 🔒 Protection contre le copier-coller (optionnel)
+            document.addEventListener('copy', (e) => {
+                e.preventDefault();
+                console.log('🚫 Copie bloquée');
+            });
+            document.addEventListener('cut', (e) => e.preventDefault());
+            document.addEventListener('paste', (e) => e.preventDefault());
+
+            // 🔒 Protection contre le glisser-déposer d'images
+            document.addEventListener('dragstart', (e) => {
+                if (e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                }
+            });
+
+            console.log('✅ Protections avancées OlysaCheck activées');
+        })();
     </script>
+
+    <!-- Inclusion du fichier de protection global (security-protection.js) -->
+    <script src="security-protection.js"></script>
 </body>
 </html>

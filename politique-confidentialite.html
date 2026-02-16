@@ -8,6 +8,7 @@
     <title>Politique de Confidentialité | Protection des Données</title>
     
     <style>
+        /* ===== TON STYLE ORIGINAL (conservé intact) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -170,6 +171,7 @@
 
         <a href="index.html" class="back-button">← Retour à l'accueil</a>
 
+        <!-- ===== CONTENU EXISTANT (conservé intégralement) ===== -->
         <section>
             <h2>1. Introduction et Engagement</h2>
             <p>Bienvenue sur notre Politique de Confidentialité. La protection de vos données personnelles est notre priorité absolue. Nous nous engageons à respecter votre vie privée et à protéger toutes les informations que vous partagez avec nous lors de l'utilisation de notre site web.</p>
@@ -637,6 +639,82 @@
             <p>&copy; 2026 Tous droits réservés</p>
         </footer>
     </div>
-	<script src="security-protection.js"></script>
+
+    <!-- ===== AJOUT SÉCURISÉ : Protections renforcées (en plus de security-protection.js) ===== -->
+    <script>
+        (function() {
+            "use strict";
+
+            // 🔒 Blocage du clic droit
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                console.log('🚫 Clic droit bloqué (sécurité)');
+            });
+
+            // 🔒 Blocage des raccourcis clavier sensibles
+            document.addEventListener('keydown', (e) => {
+                // F12
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    console.log('🚫 F12 bloqué');
+                }
+                // Ctrl+U (afficher source)
+                if (e.ctrlKey && e.key === 'u') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+U bloqué');
+                }
+                // Ctrl+Shift+I (outils développeur)
+                if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+Shift+I bloqué');
+                }
+                // Ctrl+Shift+J (console)
+                if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+Shift+J bloqué');
+                }
+                // Ctrl+Shift+C (inspecter)
+                if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                    e.preventDefault();
+                    console.log('🚫 Ctrl+Shift+C bloqué');
+                }
+            });
+
+            // 🔒 Détection basique des DevTools (par redimensionnement)
+            let devtoolsOpen = false;
+            const checkDevTools = () => {
+                const widthThreshold = window.outerWidth - window.innerWidth > 160;
+                const heightThreshold = window.outerHeight - window.innerHeight > 160;
+                if ((widthThreshold || heightThreshold) && !devtoolsOpen) {
+                    devtoolsOpen = true;
+                    console.log('🚨 DevTools détecté !');
+                    // Tu peux ajouter une action ici (redirection, affichage message)
+                } else if (!(widthThreshold || heightThreshold)) {
+                    devtoolsOpen = false;
+                }
+            };
+            setInterval(checkDevTools, 1000);
+
+            // 🔒 Protection contre le copier-coller (optionnel)
+            document.addEventListener('copy', (e) => {
+                e.preventDefault();
+                console.log('🚫 Copie bloquée');
+            });
+            document.addEventListener('cut', (e) => e.preventDefault());
+            document.addEventListener('paste', (e) => e.preventDefault());
+
+            // 🔒 Protection contre le glisser-déposer d'images
+            document.addEventListener('dragstart', (e) => {
+                if (e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                }
+            });
+
+            console.log('✅ Protections avancées OlysaCheck activées (page politique)');
+        })();
+    </script>
+
+    <!-- Inclusion du fichier de protection global (existant) -->
+    <script src="security-protection.js"></script>
 </body>
 </html>

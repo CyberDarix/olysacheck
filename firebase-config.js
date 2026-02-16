@@ -17,6 +17,37 @@ const firebaseConfig = {
   measurementId: "G-TXQQPPP7J2"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// ═══════════════════════════════════════════════════════════════
+//   🛡️ AJOUT SÉCURISÉ : Initialisation robuste de Firebase
+// ═══════════════════════════════════════════════════════════════
+
+let app;
+let analytics;
+
+try {
+  // Vérifier que les dépendances sont bien chargées
+  if (typeof initializeApp !== 'function') {
+    throw new Error('Firebase SDK (initializeApp) non chargé correctement.');
+  }
+
+  // Initialize Firebase
+  app = initializeApp(firebaseConfig);
+  console.log('✅ Firebase initialized successfully');
+
+  // Analytics n'est disponible que dans un environnement navigateur
+  if (typeof window !== 'undefined' && typeof getAnalytics === 'function') {
+    analytics = getAnalytics(app);
+    console.log('✅ Firebase Analytics initialized');
+  } else {
+    console.warn('⚠️ Analytics skipped (non-browser environment)');
+  }
+
+} catch (error) {
+  console.error('❌ Firebase initialization error:', error.message);
+  // Optionnel : envoyer l'erreur à un service de monitoring
+}
+
+// ═══════════════════════════════════════════════════════════════
+//   Exporter les instances pour les utiliser dans d'autres modules
+// ═══════════════════════════════════════════════════════════════
+export { app, analytics };

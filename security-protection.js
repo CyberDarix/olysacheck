@@ -2,7 +2,7 @@
 //   🛡️ OLYSACHECK - SYSTÈME DE PROTECTION ULTRA-PROFESSIONNEL
 // ═══════════════════════════════════════════════════════════════════════════════
 //   Fichier: security-protection.js
-//   Version: 2.0.0 PROFESSIONAL EDITION
+//   Version: 3.0.0 PROFESSIONAL EDITION (avec modules neuronaux)
 //   Auteur: OlysaCheck Security Team
 //   Description: Protection militaire contre les menaces web + Cloudflare Turnstile
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -255,6 +255,196 @@
     };
 
     // ═══════════════════════════════════════════════════════════════════════════
+    //   🧠 SYSTÈME NEURONAL DE SÉCURITÉ (AJOUT INTELLIGENT)
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const NeuralSecurity = {
+        // Scores cumulés
+        totalScore: 0,
+        
+        // Suivi des yeux (eye tracking simulé)
+        eyeTracking: {
+            zones: {},       // compteurs par zone (x,y arrondis)
+            lastPosition: null,
+            lastTimestamp: Date.now(),
+            init: function() {
+                document.addEventListener('mousemove', (e) => {
+                    const now = Date.now();
+                    const dt = now - this.lastTimestamp;
+                    if (dt < 50) return; // limiter la fréquence
+                    
+                    // Arrondir la position pour créer des zones
+                    const zoneX = Math.floor(e.clientX / 100);
+                    const zoneY = Math.floor(e.clientY / 100);
+                    const zoneKey = `${zoneX},${zoneY}`;
+                    this.zones[zoneKey] = (this.zones[zoneKey] || 0) + 1;
+                    
+                    // Calculer la distance par rapport à la dernière position
+                    if (this.lastPosition) {
+                        const dist = Math.hypot(e.clientX - this.lastPosition.x, e.clientY - this.lastPosition.y);
+                        // Les humains ont souvent des mouvements fluides, pas des sauts énormes
+                        if (dist > 500 && dt < 200) {
+                            NeuralSecurity.addSuspicion(5, 'Mouvement de souris anormalement rapide');
+                        }
+                    }
+                    
+                    this.lastPosition = { x: e.clientX, y: e.clientY };
+                    this.lastTimestamp = now;
+                });
+            },
+            getZoneDiversity: function() {
+                // Un humain explore plusieurs zones, un bot reste souvent fixe
+                return Object.keys(this.zones).length;
+            }
+        },
+        
+        // Détection de virtualisation
+        virtualizationDetector: function() {
+            let score = 0;
+            // Détection basique de VM via des propriétés
+            const ua = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            
+            // Indices de virtualisation courants
+            if (ua.includes('virtualbox') || ua.includes('vmware') || ua.includes('qemu')) {
+                score += 20;
+                console.warn('🖥️ Environnement virtualisé détecté (UA)');
+            }
+            
+            // Vérifier la résolution d'écran (les VM ont souvent des résolutions fixes)
+            if (screen.width === 1024 && screen.height === 768) {
+                score += 5;
+            }
+            
+            // Vérifier le nombre de cœurs (souvent faible dans les VM)
+            if (navigator.hardwareConcurrency <= 2) {
+                score += 5;
+            }
+            
+            if (score > 0) {
+                this.addSuspicion(score, 'Indices de virtualisation');
+            }
+        },
+        
+        // Fingerprinting avancé
+        advancedFingerprint: function() {
+            const fp = {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                touchSupport: 'ontouchstart' in window,
+                cookiesEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                deviceMemory: navigator.deviceMemory,
+                plugins: Array.from(navigator.plugins).map(p => p.name).join(','),
+                fonts: this.detectFonts(),
+                canvas: this.getCanvasFingerprint(),
+                webgl: this.getWebGLFingerprint()
+            };
+            
+            // Stocker le fingerprint initial
+            if (!sessionStorage.getItem('olysacheck_fingerprint')) {
+                sessionStorage.setItem('olysacheck_fingerprint', JSON.stringify(fp));
+            } else {
+                const oldFP = JSON.parse(sessionStorage.getItem('olysacheck_fingerprint'));
+                // Comparer les propriétés principales
+                let changes = 0;
+                for (let key in fp) {
+                    if (oldFP[key] !== fp[key]) changes++;
+                }
+                if (changes > 2) {
+                    this.addSuspicion(30, 'Changement important de fingerprint');
+                }
+            }
+        },
+        
+        detectFonts: function() {
+            // Liste de polices communes pour vérifier la présence
+            const fontList = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Helvetica'];
+            let detected = [];
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = '16px Arial';
+            const baseline = ctx.measureText('test').width;
+            for (let font of fontList) {
+                ctx.font = `16px ${font}, Arial`;
+                if (ctx.measureText('test').width !== baseline) {
+                    detected.push(font);
+                }
+            }
+            return detected.join(',');
+        },
+        
+        getCanvasFingerprint: function() {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 50;
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#f60';
+                ctx.fillRect(0, 0, 200, 50);
+                ctx.fillStyle = '#069';
+                ctx.fillText('OlysaCheck', 10, 20);
+                return canvas.toDataURL().slice(0, 100); // tronqué
+            } catch(e) {
+                return '';
+            }
+        },
+        
+        getWebGLFingerprint: function() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (!gl) return '';
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                }
+                return '';
+            } catch(e) {
+                return '';
+            }
+        },
+        
+        addSuspicion: function(amount, reason) {
+            this.totalScore += amount;
+            logSecurityEvent('neural_suspicion', { amount, reason, totalScore: this.totalScore });
+            console.warn(`🧠 Suspicion neuronale +${amount} : ${reason}`);
+        },
+        
+        analyzeAll: function() {
+            this.eyeTracking.init();
+            this.virtualizationDetector();
+            this.advancedFingerprint();
+            
+            // Vérification périodique
+            setInterval(() => {
+                const diversity = this.eyeTracking.getZoneDiversity();
+                if (diversity < 3 && this.totalScore < 50) {
+                    this.addSuspicion(10, 'Très faible diversité de zones explorées');
+                }
+                
+                // Si le score total dépasse un seuil, on peut prendre des mesures
+                if (this.totalScore > 70) {
+                    console.error('🚨 Score neuronal critique ! Blocage préventif.');
+                    showSecurityAlert('Activité anormale détectée. Vérification supplémentaire requise.');
+                    // On peut forcer un nouveau challenge Turnstile
+                    if (!turnstileVerified) {
+                        // Forcer la réinitialisation de la vérification
+                        sessionStorage.removeItem('turnstile_verified');
+                        initCloudflare(); // relance le challenge
+                    }
+                }
+            }, 15000);
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════════════════════
     //   🤖 INITIALISATION CLOUDFLARE TURNSTILE
     // ═══════════════════════════════════════════════════════════════════════════
     
@@ -492,6 +682,8 @@
                 
                 // Démarrer la surveillance comportementale
                 BehaviorMonitor.init();
+                // Démarrer l'analyse neuronale
+                NeuralSecurity.analyzeAll();
             }, 500);
         }, 1500);
     }
@@ -638,6 +830,7 @@
         console.log('%c  ✓ Anti-DevTools', 'color: #0052cc;');
         console.log('%c  ✓ Anti-Copy/Paste', 'color: #0052cc;');
         console.log('%c  ✓ Logging avancé', 'color: #0052cc;');
+        console.log('%c  🧠 Neural Security Modules', 'color: #0052cc;');
     })();
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -746,7 +939,7 @@
     
     window.addEventListener('DOMContentLoaded', function() {
         initCloudflare();
-        logSecurityEvent('system_initialized', { version: '2.0.0' });
+        logSecurityEvent('system_initialized', { version: '3.0.0' });
     });
 
     window.addEventListener('load', function() {
