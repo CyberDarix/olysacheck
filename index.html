@@ -2172,6 +2172,35 @@
                 }
             }
 
+            // 🔍 Appel à notre backend PHP (api.php)
+            let breaches = [];
+            try {
+                const response = await fetch(`api.php?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Transformation des données pour correspondre au format d'affichage existant
+                breaches = (data.breaches || []).map(b => ({
+                    name: b.breach_name,
+                    date: b.breach_date,
+                    severity: b.severity,
+                    description: b.description || 'Aucune description disponible',
+                    exposed: b.exposed_data ? JSON.stringify(b.exposed_data) : 'Données non spécifiées'
+                }));
+            } catch (error) {
+                console.error('Erreur lors de la vérification:', error);
+                results.className = 'results compromised show';
+                document.getElementById('resultsIcon').textContent = '!';
+                document.getElementById('resultsTitle').textContent = 'Erreur technique';
+                document.getElementById('resultsDescription').textContent = 'Impossible de vérifier pour le moment. Réessaie plus tard.';
+                document.getElementById('breachList').innerHTML = '';
+                progressSection.classList.remove('show');
+                return;
+            }
+
             await new Promise(resolve => setTimeout(resolve, 500));
             progressSection.classList.remove('show');
             steps.forEach(step => {
@@ -2179,7 +2208,6 @@
             });
             progressFill.style.width = '0%';
 
-            const breaches = breachDatabase[email];
             const resultsIcon = document.getElementById('resultsIcon');
             const resultsTitle = document.getElementById('resultsTitle');
             const resultsDescription = document.getElementById('resultsDescription');
