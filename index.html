@@ -2139,6 +2139,9 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
+        // ==============================================
+        // ✅ FONCTION CORRIGÉE - VERSION FINALE
+        // ==============================================
         async function checkEmail() {
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
             
@@ -2172,75 +2175,92 @@
                 }
             }
 
-            // 🔍 Appel à notre backend PHP (api.php)
-            let breaches = [];
             try {
-                const response = await fetch(`api.php?email=${encodeURIComponent(email)}`);
+                // ✅ CORRECTION : Appel à check-email.php avec POST et la clé API
+                const response = await fetch('/check-email.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': 'oly_sk_live_9f7e8d2a4b6c1e3f8a5d7c9b2e4f6a8d'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
                 const data = await response.json();
 
-                if (data.error) {
-                    throw new Error(data.error);
+                if (!data.success) {
+                    throw new Error(data.error?.message || 'Erreur inconnue');
                 }
 
-                // Transformation des données pour correspondre au format d'affichage existant
-                breaches = (data.breaches || []).map(b => ({
-                    name: b.breach_name,
-                    date: b.breach_date,
+                // Transformer les données pour l'affichage
+                const breaches = data.data.breaches.details.map(b => ({
+                    name: b.name,
+                    date: new Date(b.date).toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }),
                     severity: b.severity,
                     description: b.description || 'Aucune description disponible',
-                    exposed: b.exposed_data ? JSON.stringify(b.exposed_data) : 'Données non spécifiées'
+                    exposed: b.data_exposed ? b.data_exposed.join(', ') : 'Données non spécifiées'
                 }));
-            } catch (error) {
-                console.error('Erreur lors de la vérification:', error);
-                results.className = 'results compromised show';
-                document.getElementById('resultsIcon').textContent = '!';
-                document.getElementById('resultsTitle').textContent = 'Erreur technique';
-                document.getElementById('resultsDescription').textContent = 'Impossible de vérifier pour le moment. Réessaie plus tard.';
-                document.getElementById('breachList').innerHTML = '';
+
+                await new Promise(resolve => setTimeout(resolve, 500));
                 progressSection.classList.remove('show');
-                return;
-            }
+                steps.forEach(step => {
+                    document.getElementById(step).classList.remove('active', 'complete');
+                });
+                progressFill.style.width = '0%';
 
-            await new Promise(resolve => setTimeout(resolve, 500));
-            progressSection.classList.remove('show');
-            steps.forEach(step => {
-                document.getElementById(step).classList.remove('active', 'complete');
-            });
-            progressFill.style.width = '0%';
+                const resultsIcon = document.getElementById('resultsIcon');
+                const resultsTitle = document.getElementById('resultsTitle');
+                const resultsDescription = document.getElementById('resultsDescription');
+                const breachList = document.getElementById('breachList');
 
-            const resultsIcon = document.getElementById('resultsIcon');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsDescription = document.getElementById('resultsDescription');
-            const breachList = document.getElementById('breachList');
+                if (breaches && breaches.length > 0) {
+                    results.className = 'results compromised show';
+                    resultsIcon.textContent = '!';
+                    resultsTitle.textContent = breaches.length + ' ' + translations[currentLang]['results-compromised-title'];
+                    resultsDescription.textContent = translations[currentLang]['results-compromised-desc'];
 
-            if (breaches && breaches.length > 0) {
-                results.className = 'results compromised show';
-                resultsIcon.textContent = '!';
-                resultsTitle.textContent = breaches.length + ' ' + translations[currentLang]['results-compromised-title'];
-                resultsDescription.textContent = translations[currentLang]['results-compromised-desc'];
-
-                breachList.innerHTML = breaches.map(breach => `
-                    <div class="breach-card">
-                        <div class="breach-header">
-                            <div class="breach-name">${breach.name}</div>
-                            <div class="severity-badge severity-${breach.severity}">
-                                ${breach.severity === 'critical' ? 'CRITIQUE' : 'ÉLEVÉ'}
+                    breachList.innerHTML = breaches.map(breach => `
+                        <div class="breach-card">
+                            <div class="breach-header">
+                                <div class="breach-name">${breach.name}</div>
+                                <div class="severity-badge severity-${breach.severity}">
+                                    ${breach.severity === 'critical' ? 'CRITIQUE' : 'ÉLEVÉ'}
+                                </div>
+                            </div>
+                            <div class="breach-meta">Date de la violation : ${breach.date}</div>
+                            <div class="breach-description">${breach.description}</div>
+                            <div class="breach-details">
+                                <div class="breach-details-title">${translations[currentLang]['breach-exposed']} :</div>
+                                <div class="breach-details-list">${breach.exposed}</div>
                             </div>
                         </div>
-                        <div class="breach-meta">Date de la violation : ${breach.date}</div>
-                        <div class="breach-description">${breach.description}</div>
-                        <div class="breach-details">
-                            <div class="breach-details-title">${translations[currentLang]['breach-exposed']} :</div>
-                            <div class="breach-details-list">${breach.exposed}</div>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                results.className = 'results safe show';
-                resultsIcon.textContent = '✓';
-                resultsTitle.textContent = translations[currentLang]['results-safe-title'];
-                resultsDescription.textContent = translations[currentLang]['results-safe-desc'];
-                breachList.innerHTML = '';
+                    `).join('');
+                } else {
+                    results.className = 'results safe show';
+                    resultsIcon.textContent = '✓';
+                    resultsTitle.textContent = translations[currentLang]['results-safe-title'];
+                    resultsDescription.textContent = translations[currentLang]['results-safe-desc'];
+                    breachList.innerHTML = '';
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                
+                progressSection.classList.remove('show');
+                steps.forEach(step => {
+                    document.getElementById(step).classList.remove('active', 'complete');
+                });
+                progressFill.style.width = '0%';
+
+                results.className = 'results compromised show';
+                resultsIcon.textContent = '!';
+                resultsTitle.textContent = 'Erreur technique';
+                resultsDescription.textContent = error.message || 'Impossible de vérifier pour le moment. Réessaie plus tard.';
+                document.getElementById('breachList').innerHTML = '';
             }
         }
 
