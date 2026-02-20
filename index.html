@@ -2437,24 +2437,6 @@
                 handleSendMessage();
             });
         });
-
-        // ========== AJOUT : FONCTION DE DIAGNOSTIC POUR VÉRIFIER L'API ==========
-        async function testAPIConnection() {
-            try {
-                const response = await fetch('api.php?email=test@example.com');
-                const data = await response.json();
-                console.log('✅ Test API réussi:', data);
-                return true;
-            } catch (error) {
-                console.error('❌ Test API échoué:', error);
-                return false;
-            }
-        }
-
-        // Tester la connexion au chargement (optionnel)
-        window.addEventListener('load', () => {
-            setTimeout(testAPIConnection, 2000);
-        });
     </script>
 
     <!-- 🛡️ SYSTÈME DE PROTECTION DU SITE -->
