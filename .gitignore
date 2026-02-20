@@ -1,0 +1,14 @@
+# Fichiers sensibles avec mots de passe
+check-email.php
+*.log
+.env
+.DS_Store
+
+# Dossiers système
+Thumbs.db
+desktop.ini
+
+# Fichiers de configuration locaux
+.vercel
+.vscode
+.idea
