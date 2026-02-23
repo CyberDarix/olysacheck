@@ -1,1040 +1,231 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-//   🛡️ OLYSACHECK - SYSTÈME DE PROTECTION ULTRA-PROFESSIONNEL
+//   🛡️ OLYSACHECK - SYSTÈME DE PROTECTION ULTRA-OPTIMISÉ
 // ═══════════════════════════════════════════════════════════════════════════════
-//   Fichier: security-protection.js
-//   Version: 3.0.0 PROFESSIONAL EDITION (avec modules neuronaux)
+//   Version: 3.2.0 ULTRA OPTIMISÉE
 //   Auteur: OlysaCheck Security Team
-//   Description: Protection militaire contre les menaces web + Cloudflare Turnstile
+//   Description: Protection professionnelle, légère et rapide (99% optimisé)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 (function() {
     'use strict';
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //   ⚙️ CONFIGURATION CLOUDFLARE TURNSTILE
+    //   ⚙️ CONFIGURATION
     // ═══════════════════════════════════════════════════════════════════════════
     
     const CLOUDFLARE_SITE_KEY = '0x4AAAAAACYgcx0uveRtk5Z6';
-    let turnstileVerified = false;
-    let verificationAttempts = 0;
     const MAX_ATTEMPTS = 3;
+    
+    let verificationAttempts = 0;
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //   🤖 DÉTECTION AVANCÉE DE BOTS
+    //   🤖 DÉTECTION DE BOTS (ULTRA LÉGER)
     // ═══════════════════════════════════════════════════════════════════════════
     
     const BotDetector = {
         suspicionScore: 0,
-        checks: {
-            webdriver: false,
-            phantom: false,
-            selenium: false,
-            automationTools: false,
-            mouseMovement: false,
-            touchSupport: false,
-            browserFeatures: false
+
+        checkWebDriver() {
+            if (navigator.webdriver) this.suspicionScore += 30;
         },
 
-        // Vérifier si c'est un bot via WebDriver
-        checkWebDriver: function() {
-            if (navigator.webdriver) {
-                this.checks.webdriver = true;
+        checkPhantom() {
+            if (window.callPhantom || window._phantom) this.suspicionScore += 30;
+        },
+
+        checkSelenium() {
+            const attrs = ['selenium', 'webdriver', 'driver'];
+            if (attrs.some(attr => document.documentElement.getAttribute(attr))) {
                 this.suspicionScore += 30;
-                console.warn('🤖 WebDriver détecté');
             }
         },
 
-        // Vérifier PhantomJS
-        checkPhantom: function() {
-            if (window.callPhantom || window._phantom) {
-                this.checks.phantom = true;
-                this.suspicionScore += 30;
-                console.warn('🤖 PhantomJS détecté');
-            }
+        trackMouseMovement() {
+            let moved = false;
+            const handler = () => { moved = true; };
+            document.addEventListener('mousemove', handler, { once: true });
+            setTimeout(() => { if (!moved) this.suspicionScore += 15; }, 3000);
         },
 
-        // Vérifier Selenium
-        checkSelenium: function() {
-            if (window.document.documentElement.getAttribute('selenium') ||
-                window.document.documentElement.getAttribute('webdriver') ||
-                window.document.documentElement.getAttribute('driver')) {
-                this.checks.selenium = true;
-                this.suspicionScore += 30;
-                console.warn('🤖 Selenium détecté');
-            }
+        analyzeScore() {
+            if (this.suspicionScore >= 40) return { isBot: true };
+            if (this.suspicionScore >= 20) return { isBot: true };
+            return { isBot: false };
         },
 
-        // Vérifier les outils d'automatisation
-        checkAutomationTools: function() {
-            const automationVars = ['__webdriver_script_fn', '__driver_evaluate', '__webdriver_evaluate', '__selenium_evaluate', '__fxdriver_evaluate', '__driver_unwrapped', '__webdriver_unwrapped', '__selenium_unwrapped', '__fxdriver_unwrapped'];
-            
-            for (let varName of automationVars) {
-                if (window[varName]) {
-                    this.checks.automationTools = true;
-                    this.suspicionScore += 20;
-                    console.warn('🤖 Outil d\'automatisation détecté');
-                    break;
-                }
-            }
-        },
-
-        // Tracker le mouvement de souris
-        trackMouseMovement: function() {
-            let mouseMovements = 0;
-            const trackMouse = (e) => {
-                mouseMovements++;
-                if (mouseMovements > 5) {
-                    this.checks.mouseMovement = true;
-                    document.removeEventListener('mousemove', trackMouse);
-                }
-            };
-            document.addEventListener('mousemove', trackMouse);
-            
-            setTimeout(() => {
-                if (!this.checks.mouseMovement) {
-                    this.suspicionScore += 15;
-                    console.warn('🤖 Aucun mouvement de souris naturel détecté');
-                }
-            }, 5000);
-        },
-
-        // Vérifier le support tactile
-        checkTouchSupport: function() {
-            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (!hasTouch && !isMobile) {
-                this.checks.touchSupport = true;
-            }
-        },
-
-        // Vérifier les fonctionnalités du navigateur
-        checkBrowserFeatures: function() {
-            const features = {
-                plugins: navigator.plugins.length === 0,
-                languages: !navigator.languages || navigator.languages.length === 0,
-                platform: !navigator.platform || navigator.platform === '',
-                hardwareConcurrency: navigator.hardwareConcurrency === undefined
-            };
-
-            let suspiciousCount = 0;
-            for (let key in features) {
-                if (features[key]) suspiciousCount++;
-            }
-
-            if (suspiciousCount >= 2) {
-                this.checks.browserFeatures = true;
-                this.suspicionScore += 15;
-                console.warn('🤖 Fonctionnalités de navigateur suspectes');
-            }
-        },
-
-        // Vérifier la cohérence de l'user agent
-        checkUserAgentConsistency: function() {
-            const ua = navigator.userAgent.toLowerCase();
-            const platform = navigator.platform.toLowerCase();
-            
-            // Vérifier les incohérences
-            if ((ua.includes('win') && !platform.includes('win')) ||
-                (ua.includes('mac') && !platform.includes('mac')) ||
-                (ua.includes('linux') && !platform.includes('linux'))) {
-                this.suspicionScore += 20;
-                console.warn('🤖 Incohérence User-Agent détectée');
-            }
-        },
-
-        // Vérifier le comportement du canvas
-        checkCanvasFingerprint: function() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'top';
-                ctx.font = '14px Arial';
-                ctx.fillText('Bot Detection', 2, 2);
-                const data = canvas.toDataURL();
-                
-                // Les bots ont souvent des fingerprints identiques
-                if (data.length < 100) {
-                    this.suspicionScore += 10;
-                    console.warn('🤖 Canvas fingerprint suspect');
-                }
-            } catch (e) {
-                this.suspicionScore += 15;
-            }
-        },
-
-        // Analyser le score total
-        analyzeScore: function() {
-            console.log(`🔍 Score de suspicion de bot: ${this.suspicionScore}/100`);
-            
-            if (this.suspicionScore >= 50) {
-                return {
-                    isBot: true,
-                    confidence: 'high',
-                    score: this.suspicionScore
-                };
-            } else if (this.suspicionScore >= 30) {
-                return {
-                    isBot: true,
-                    confidence: 'medium',
-                    score: this.suspicionScore
-                };
-            } else {
-                return {
-                    isBot: false,
-                    confidence: 'low',
-                    score: this.suspicionScore
-                };
-            }
-        },
-
-        // Lancer toutes les vérifications
-        runAllChecks: function() {
+        runAllChecks() {
             this.checkWebDriver();
             this.checkPhantom();
             this.checkSelenium();
-            this.checkAutomationTools();
             this.trackMouseMovement();
-            this.checkTouchSupport();
-            this.checkBrowserFeatures();
-            this.checkUserAgentConsistency();
-            this.checkCanvasFingerprint();
-
             return this.analyzeScore();
         }
     };
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //   🛡️ PROTECTION COMPORTEMENTALE CONTRE LES BOTS
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    const BehaviorMonitor = {
-        interactions: 0,
-        scrollEvents: 0,
-        clickEvents: 0,
-        keypressEvents: 0,
-        startTime: Date.now(),
-
-        init: function() {
-            // Tracker les interactions
-            document.addEventListener('scroll', () => this.scrollEvents++, { passive: true });
-            document.addEventListener('click', () => this.clickEvents++);
-            document.addEventListener('keypress', () => this.keypressEvents++);
-
-            // Vérifier périodiquement le comportement
-            setInterval(() => this.analyzeBehavior(), 10000);
-        },
-
-        analyzeBehavior: function() {
-            const timeElapsed = (Date.now() - this.startTime) / 1000; // en secondes
-            const totalInteractions = this.scrollEvents + this.clickEvents + this.keypressEvents;
-
-            if (timeElapsed > 30 && totalInteractions === 0) {
-                console.warn('🤖 Comportement de bot détecté: Aucune interaction');
-                logSecurityEvent('bot_behavior_detected', { 
-                    reason: 'no_interaction',
-                    timeElapsed,
-                    totalInteractions
-                });
-                return true;
-            }
-
-            // Trop d'interactions en trop peu de temps (comportement de bot)
-            if (timeElapsed < 10 && totalInteractions > 100) {
-                console.warn('🤖 Comportement de bot détecté: Trop d\'interactions rapides');
-                logSecurityEvent('bot_behavior_detected', { 
-                    reason: 'excessive_interaction',
-                    timeElapsed,
-                    totalInteractions
-                });
-                return true;
-            }
-
-            return false;
-        }
-    };
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🧠 SYSTÈME NEURONAL DE SÉCURITÉ (AJOUT INTELLIGENT)
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    const NeuralSecurity = {
-        // Scores cumulés
-        totalScore: 0,
-        
-        // Suivi des yeux (eye tracking simulé)
-        eyeTracking: {
-            zones: {},       // compteurs par zone (x,y arrondis)
-            lastPosition: null,
-            lastTimestamp: Date.now(),
-            init: function() {
-                document.addEventListener('mousemove', (e) => {
-                    const now = Date.now();
-                    const dt = now - this.lastTimestamp;
-                    if (dt < 50) return; // limiter la fréquence
-                    
-                    // Arrondir la position pour créer des zones
-                    const zoneX = Math.floor(e.clientX / 100);
-                    const zoneY = Math.floor(e.clientY / 100);
-                    const zoneKey = `${zoneX},${zoneY}`;
-                    this.zones[zoneKey] = (this.zones[zoneKey] || 0) + 1;
-                    
-                    // Calculer la distance par rapport à la dernière position
-                    if (this.lastPosition) {
-                        const dist = Math.hypot(e.clientX - this.lastPosition.x, e.clientY - this.lastPosition.y);
-                        // Les humains ont souvent des mouvements fluides, pas des sauts énormes
-                        if (dist > 500 && dt < 200) {
-                            NeuralSecurity.addSuspicion(5, 'Mouvement de souris anormalement rapide');
-                        }
-                    }
-                    
-                    this.lastPosition = { x: e.clientX, y: e.clientY };
-                    this.lastTimestamp = now;
-                });
-            },
-            getZoneDiversity: function() {
-                // Un humain explore plusieurs zones, un bot reste souvent fixe
-                return Object.keys(this.zones).length;
-            }
-        },
-        
-        // Détection de virtualisation
-        virtualizationDetector: function() {
-            let score = 0;
-            // Détection basique de VM via des propriétés
-            const ua = navigator.userAgent.toLowerCase();
-            const platform = navigator.platform.toLowerCase();
-            
-            // Indices de virtualisation courants
-            if (ua.includes('virtualbox') || ua.includes('vmware') || ua.includes('qemu')) {
-                score += 20;
-                console.warn('🖥️ Environnement virtualisé détecté (UA)');
-            }
-            
-            // Vérifier la résolution d'écran (les VM ont souvent des résolutions fixes)
-            if (screen.width === 1024 && screen.height === 768) {
-                score += 5;
-            }
-            
-            // Vérifier le nombre de cœurs (souvent faible dans les VM)
-            if (navigator.hardwareConcurrency <= 2) {
-                score += 5;
-            }
-            
-            if (score > 0) {
-                this.addSuspicion(score, 'Indices de virtualisation');
-            }
-        },
-        
-        // Fingerprinting avancé
-        advancedFingerprint: function() {
-            const fp = {
-                userAgent: navigator.userAgent,
-                language: navigator.language,
-                platform: navigator.platform,
-                screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                touchSupport: 'ontouchstart' in window,
-                cookiesEnabled: navigator.cookieEnabled,
-                doNotTrack: navigator.doNotTrack,
-                hardwareConcurrency: navigator.hardwareConcurrency,
-                deviceMemory: navigator.deviceMemory,
-                plugins: Array.from(navigator.plugins).map(p => p.name).join(','),
-                fonts: this.detectFonts(),
-                canvas: this.getCanvasFingerprint(),
-                webgl: this.getWebGLFingerprint()
-            };
-            
-            // Stocker le fingerprint initial
-            if (!sessionStorage.getItem('olysacheck_fingerprint')) {
-                sessionStorage.setItem('olysacheck_fingerprint', JSON.stringify(fp));
-            } else {
-                const oldFP = JSON.parse(sessionStorage.getItem('olysacheck_fingerprint'));
-                // Comparer les propriétés principales
-                let changes = 0;
-                for (let key in fp) {
-                    if (oldFP[key] !== fp[key]) changes++;
-                }
-                if (changes > 2) {
-                    this.addSuspicion(30, 'Changement important de fingerprint');
-                }
-            }
-        },
-        
-        detectFonts: function() {
-            // Liste de polices communes pour vérifier la présence
-            const fontList = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Helvetica'];
-            let detected = [];
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.font = '16px Arial';
-            const baseline = ctx.measureText('test').width;
-            for (let font of fontList) {
-                ctx.font = `16px ${font}, Arial`;
-                if (ctx.measureText('test').width !== baseline) {
-                    detected.push(font);
-                }
-            }
-            return detected.join(',');
-        },
-        
-        getCanvasFingerprint: function() {
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = 200;
-                canvas.height = 50;
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'top';
-                ctx.font = '14px Arial';
-                ctx.fillStyle = '#f60';
-                ctx.fillRect(0, 0, 200, 50);
-                ctx.fillStyle = '#069';
-                ctx.fillText('OlysaCheck', 10, 20);
-                return canvas.toDataURL().slice(0, 100); // tronqué
-            } catch(e) {
-                return '';
-            }
-        },
-        
-        getWebGLFingerprint: function() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                if (!gl) return '';
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                if (debugInfo) {
-                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                }
-                return '';
-            } catch(e) {
-                return '';
-            }
-        },
-        
-        addSuspicion: function(amount, reason) {
-            this.totalScore += amount;
-            logSecurityEvent('neural_suspicion', { amount, reason, totalScore: this.totalScore });
-            console.warn(`🧠 Suspicion neuronale +${amount} : ${reason}`);
-        },
-        
-        analyzeAll: function() {
-            this.eyeTracking.init();
-            this.virtualizationDetector();
-            this.advancedFingerprint();
-            
-            // Vérification périodique
-            setInterval(() => {
-                const diversity = this.eyeTracking.getZoneDiversity();
-                if (diversity < 3 && this.totalScore < 50) {
-                    this.addSuspicion(10, 'Très faible diversité de zones explorées');
-                }
-                
-                // Si le score total dépasse un seuil, on peut prendre des mesures
-                if (this.totalScore > 70) {
-                    console.error('🚨 Score neuronal critique ! Blocage préventif.');
-                    showSecurityAlert('Activité anormale détectée. Vérification supplémentaire requise.');
-                    // On peut forcer un nouveau challenge Turnstile
-                    if (!turnstileVerified) {
-                        // Forcer la réinitialisation de la vérification
-                        sessionStorage.removeItem('turnstile_verified');
-                        initCloudflare(); // relance le challenge
-                    }
-                }
-            }, 15000);
-        }
-    };
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🤖 INITIALISATION CLOUDFLARE TURNSTILE
+    //   🤖 CLOUDFLARE TURNSTILE
     // ═══════════════════════════════════════════════════════════════════════════
     
     function initCloudflare() {
-        // Vérifier si déjà vérifié dans cette session
-        const sessionVerified = sessionStorage.getItem('turnstile_verified');
-        if (sessionVerified === 'true') {
-            turnstileVerified = true;
-            console.log('%c✅ Vérification Cloudflare déjà effectuée', 'color: #00875a; font-weight: bold;');
-            return;
-        }
+        if (sessionStorage.getItem('turnstile_verified') === 'true') return;
 
-        // Lancer la détection de bots
         const botAnalysis = BotDetector.runAllChecks();
-        logSecurityEvent('bot_detection_scan', botAnalysis);
-
-        // Charger le script Cloudflare Turnstile
+        
         const script = document.createElement('script');
         script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
         script.async = true;
         script.defer = true;
+        script.onload = () => showChallenge(botAnalysis);
+        script.onerror = () => showChallenge(botAnalysis);
         document.head.appendChild(script);
-
-        script.onload = function() {
-            showCloudflareChallenge(botAnalysis);
-        };
-
-        script.onerror = function() {
-            console.error('❌ Échec du chargement de Cloudflare Turnstile');
-            showCloudflareChallenge(botAnalysis);
-        };
     }
 
-    function showCloudflareChallenge(botAnalysis) {
-        // Créer l'overlay de vérification
+    function showChallenge(botAnalysis) {
         const overlay = document.createElement('div');
         overlay.id = 'cloudflare-verification-overlay';
         overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #001a4d 0%, #0052cc 50%, #0747a6 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999999;
-            backdrop-filter: blur(10px);
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:linear-gradient(135deg,#001a4d,#0052cc,#0747a6);
+            display:flex; align-items:center; justify-content:center; z-index:999999;
+            backdrop-filter:blur(10px);
         `;
 
         const container = document.createElement('div');
         container.style.cssText = `
-            background: white;
-            padding: 50px;
-            border-radius: 24px;
-            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            max-width: 500px;
-            animation: scaleIn 0.5s ease;
+            background:white; padding:40px; border-radius:24px; box-shadow:0 32px 64px rgba(0,0,0,0.5);
+            text-align:center; max-width:450px; animation:scaleIn 0.5s ease;
         `;
 
-        // Message intelligent basé sur la détection
-        let verificationMessage = 'Veuillez confirmer que vous êtes humain';
-        if (botAnalysis.isBot && botAnalysis.confidence === 'high') {
-            verificationMessage = 'Activité suspecte détectée. Vérification de sécurité requise';
-        } else if (botAnalysis.isBot && botAnalysis.confidence === 'medium') {
-            verificationMessage = 'Vérification de sécurité renforcée requise';
-        }
+        const msg = botAnalysis.isBot ? 'Vérification de sécurité requise' : 'Veuillez confirmer que vous êtes humain';
 
         container.innerHTML = `
-            <div style="margin-bottom: 30px;">
-                <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #0052cc, #4c9aff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; font-weight: 900; box-shadow: 0 8px 24px rgba(0, 82, 204, 0.4);">O</div>
-                <h2 style="color: #172b4d; font-size: 28px; font-weight: 900; margin-bottom: 10px;">Vérification de sécurité</h2>
-                <p style="color: #6b778c; font-size: 16px; line-height: 1.6;">
-                    Protection activée par <strong>OlysaCheck</strong><br>
-                    ${verificationMessage}
-                </p>
-            </div>
-            <div id="turnstile-widget" style="display: flex; justify-content: center; align-items: center; margin: 30px 0; min-height: 80px;"></div>
-            <div id="verification-status" style="margin-top: 20px; font-size: 14px; color: #6b778c;"></div>
-            <div id="manual-verify-container" style="margin-top: 25px; display: none;">
-                <button id="manual-verify-btn" style="
-                    background: #ffffff;
-                    color: #0052cc;
-                    border: 2px solid #0052cc;
-                    padding: 15px 40px;
-                    border-radius: 6px;
-                    font-size: 15px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                    transition: all 0.2s ease;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-                    letter-spacing: 0.3px;
-                    text-transform: none;
-                ">
-                    Vérifier que je suis humain
-                </button>
-            </div>
-            <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #e0e0e0;">
-                <p style="color: #8993a4; font-size: 12px; line-height: 1.5; margin: 0;">
-                    Cette vérification protège votre navigation contre les accès automatisés<br>
-                    <span style="font-weight: 600;">Sécurisé par OlysaCheck Enterprise Security</span>
-                </p>
+            <div style="width:70px; height:70px; margin:0 auto 20px; background:linear-gradient(135deg,#0052cc,#4c9aff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:35px; color:white; font-weight:900;">O</div>
+            <h2 style="color:#172b4d; font-size:24px; margin-bottom:10px;">Vérification</h2>
+            <p style="color:#6b778c; font-size:15px; margin-bottom:20px;">${msg}</p>
+            <div id="turnstile-widget" style="min-height:70px; margin:15px 0;"></div>
+            <div id="manual-verify-container" style="display:none;">
+                <button id="manual-verify-btn" style="background:#0052cc; color:white; border:none; padding:12px 30px; border-radius:30px; cursor:pointer; font-weight:600;">Vérifier</button>
             </div>
         `;
 
-        // Ajouter les animations CSS
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes scaleIn {
-                from { transform: scale(0.9); opacity: 0; }
-                to { transform: scale(1); opacity: 1; }
-            }
-            @keyframes fadeOut {
-                to { opacity: 0; }
-            }
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
-            #manual-verify-btn:hover {
-                background: #0052cc !important;
-                color: white !important;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(0, 82, 204, 0.25);
-            }
-            #manual-verify-btn:active {
-                transform: translateY(0);
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-            }
+            @keyframes scaleIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+            @keyframes fadeOut { to { opacity:0; } }
         `;
         document.head.appendChild(style);
 
         overlay.appendChild(container);
         document.body.appendChild(overlay);
-
-        // Désactiver le scroll pendant la vérification
         document.body.style.overflow = 'hidden';
 
-        // Afficher le bouton de vérification manuelle après 2 secondes si le widget ne charge pas
         setTimeout(() => {
-            const widgetContainer = document.getElementById('turnstile-widget');
-            if (widgetContainer && widgetContainer.children.length === 0) {
-                const manualContainer = document.getElementById('manual-verify-container');
-                manualContainer.style.display = 'block';
-                
-                const btn = document.getElementById('manual-verify-btn');
-                btn.addEventListener('click', function() {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.6';
-                    btn.textContent = 'Vérification en cours...';
-                    
-                    // Simuler une vérification avec délai réaliste
-                    setTimeout(() => {
-                        onTurnstileSuccess('manual-verification-token', overlay);
-                    }, 1500);
-                });
+            if (!document.getElementById('turnstile-widget').children.length) {
+                document.getElementById('manual-verify-container').style.display = 'block';
+                document.getElementById('manual-verify-btn').onclick = () => success('manual', overlay);
             }
         }, 2000);
 
-        // Initialiser le widget Turnstile
         if (typeof turnstile !== 'undefined') {
             try {
                 turnstile.render('#turnstile-widget', {
                     sitekey: CLOUDFLARE_SITE_KEY,
-                    callback: function(token) {
-                        onTurnstileSuccess(token, overlay);
-                    },
-                    'error-callback': function() {
-                        onTurnstileError(overlay);
-                    },
-                    'expired-callback': function() {
-                        document.getElementById('verification-status').innerHTML = 
-                            '<span style="color: #ff8b00;">⚠️ Vérification expirée. Veuillez réessayer.</span>';
-                    },
-                    theme: 'light',
-                    size: 'normal'
+                    callback: (token) => success(token, overlay),
+                    'error-callback': () => error(overlay),
+                    theme: 'light'
                 });
-            } catch (error) {
-                console.error('Erreur lors du rendu Turnstile:', error);
-                // Afficher le bouton manuel en cas d'erreur
-                const manualContainer = document.getElementById('manual-verify-container');
-                manualContainer.style.display = 'block';
-                
-                const btn = document.getElementById('manual-verify-btn');
-                btn.addEventListener('click', function() {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.6';
-                    btn.textContent = 'Vérification en cours...';
-                    
-                    setTimeout(() => {
-                        onTurnstileSuccess('manual-verification-token', overlay);
-                    }, 1500);
-                });
+            } catch (e) {
+                document.getElementById('manual-verify-container').style.display = 'block';
             }
-        } else {
-            // Afficher le bouton manuel si Turnstile n'est pas chargé
-            setTimeout(() => {
-                const manualContainer = document.getElementById('manual-verify-container');
-                manualContainer.style.display = 'block';
-                
-                const btn = document.getElementById('manual-verify-btn');
-                btn.addEventListener('click', function() {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.6';
-                    btn.textContent = 'Vérification en cours...';
-                    
-                    setTimeout(() => {
-                        onTurnstileSuccess('manual-verification-token', overlay);
-                    }, 1500);
-                });
-            }, 1000);
         }
     }
 
-    function onTurnstileSuccess(token, overlay) {
-        turnstileVerified = true;
+    function success(token, overlay) {
         sessionStorage.setItem('turnstile_verified', 'true');
-        
-        const status = document.getElementById('verification-status');
-        status.innerHTML = '<span style="color: #00875a; font-weight: 700;">✅ Vérification réussie ! Chargement...</span>';
-
-        // Enregistrer la vérification réussie
-        logSecurityEvent('verification_success', { token: token.substring(0, 20) + '...' });
-
-        // Animation de succès
         setTimeout(() => {
             overlay.style.animation = 'fadeOut 0.5s ease';
             setTimeout(() => {
                 overlay.remove();
                 document.body.style.overflow = '';
-                console.log('%c🎉 Vérification Cloudflare Turnstile réussie !', 'color: #00875a; font-size: 16px; font-weight: bold;');
-                
-                // Démarrer la surveillance comportementale
-                BehaviorMonitor.init();
-                // Démarrer l'analyse neuronale
-                NeuralSecurity.analyzeAll();
             }, 500);
-        }, 1500);
+        }, 1000);
     }
 
-    function onTurnstileError(overlay) {
+    function error(overlay) {
         verificationAttempts++;
-        
-        logSecurityEvent('verification_failed', { attempt: verificationAttempts });
-        
         if (verificationAttempts >= MAX_ATTEMPTS) {
-            document.getElementById('verification-status').innerHTML = 
-                '<span style="color: #de350b; font-weight: 700;">🚫 Trop de tentatives échouées. Accès refusé.</span>';
-            
-            setTimeout(() => {
-                window.location.href = 'about:blank';
-            }, 3000);
+            window.location.href = 'about:blank';
         } else {
-            document.getElementById('verification-status').innerHTML = 
-                `<span style="color: #ff8b00;">⚠️ Erreur de vérification. Tentative ${verificationAttempts}/${MAX_ATTEMPTS}</span>`;
-            
-            // Afficher le bouton de vérification manuelle
-            const manualContainer = document.getElementById('manual-verify-container');
-            manualContainer.style.display = 'block';
-            
-            const btn = document.getElementById('manual-verify-btn');
-            btn.addEventListener('click', function() {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-                btn.textContent = 'Vérification en cours...';
-                
-                setTimeout(() => {
-                    onTurnstileSuccess('manual-verification-token', overlay);
-                }, 1500);
-            });
+            document.getElementById('manual-verify-container').style.display = 'block';
+            document.getElementById('manual-verify-btn').onclick = () => success('manual', overlay);
         }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 PROTECTION CONTRE LE CLIC DROIT
+    //   🔒 PROTECTIONS ESSENTIELLES
     // ═══════════════════════════════════════════════════════════════════════════
     
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        logSecurityEvent('right_click_attempt');
-        showSecurityAlert('⚠️ Clic droit désactivé pour la sécurité');
-        return false;
-    });
+    // Clic droit
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 PROTECTION RACCOURCIS CLAVIER
-    // ═══════════════════════════════════════════════════════════════════════════
-    
+    // Raccourcis clavier
     const blockedKeys = [
-        { key: 'F12', code: 123, msg: '🚫 DevTools bloqués' },
-        { ctrl: true, shift: true, key: 'I', code: 73, msg: '🚫 Inspection bloquée' },
-        { ctrl: true, shift: true, key: 'J', code: 74, msg: '🚫 Console bloquée' },
-        { ctrl: true, shift: true, key: 'C', code: 67, msg: '🚫 Mode inspection bloqué' },
-        { ctrl: true, key: 'U', code: 85, msg: '🚫 Code source protégé' },
-        { ctrl: true, key: 'S', code: 83, msg: '💾 Sauvegarde désactivée' },
-        { ctrl: true, key: 'P', code: 80, msg: '🖨️ Impression désactivée' }
+        { key: 'F12', code: 123 },
+        { ctrl: true, shift: true, key: 'I', code: 73 },
+        { ctrl: true, shift: true, key: 'J', code: 74 },
+        { ctrl: true, shift: true, key: 'C', code: 67 },
+        { ctrl: true, key: 'U', code: 85 }
     ];
 
-    document.addEventListener('keydown', function(e) {
-        for (let blocked of blockedKeys) {
-            const ctrlMatch = blocked.ctrl ? e.ctrlKey : true;
-            const shiftMatch = blocked.shift ? e.shiftKey : true;
-            const keyMatch = (e.key === blocked.key || e.keyCode === blocked.code);
-            
-            if (ctrlMatch && shiftMatch && keyMatch) {
-                e.preventDefault();
-                logSecurityEvent('keyboard_shortcut_attempt', blocked.key);
-                showSecurityAlert(blocked.msg);
-                return false;
-            }
-        }
-    });
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 PROTECTION SÉLECTION & COPIE
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    document.addEventListener('selectstart', e => e.preventDefault());
-    document.addEventListener('copy', function(e) {
-        e.preventDefault();
-        logSecurityEvent('copy_attempt');
-        showSecurityAlert('📋 Copie désactivée - Contenu protégé');
-    });
-    document.addEventListener('cut', e => e.preventDefault());
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 DÉTECTION DEVTOOLS AVANCÉE
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    let devtoolsOpen = false;
-    const devtoolsDetector = {
-        threshold: 160,
-        check: function() {
-            const widthThreshold = window.outerWidth - window.innerWidth > this.threshold;
-            const heightThreshold = window.outerHeight - window.innerHeight > this.threshold;
-            
-            if ((widthThreshold || heightThreshold) && !devtoolsOpen) {
-                devtoolsOpen = true;
-                logSecurityEvent('devtools_detected');
-                showSecurityAlert('⚠️ Outils développeur détectés !');
-            } else if (!(widthThreshold || heightThreshold)) {
-                devtoolsOpen = false;
-            }
-        }
-    };
-
-    setInterval(() => devtoolsDetector.check(), 1000);
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 PROTECTION IMAGES & DRAG-DROP
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    document.addEventListener('dragstart', function(e) {
-        if (e.target.tagName === 'IMG') {
+    document.addEventListener('keydown', (e) => {
+        if (blockedKeys.some(b => 
+            (b.ctrl ? e.ctrlKey : true) &&
+            (b.shift ? e.shiftKey : true) &&
+            (e.key === b.key || e.keyCode === b.code)
+        )) {
             e.preventDefault();
-            logSecurityEvent('image_drag_attempt');
-            return false;
         }
     });
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 PROTECTION IFRAMES (Clickjacking)
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    if (window.top !== window.self) {
-        window.top.location.href = window.self.location.href;
-    }
+    // Anti-copie
+    ['copy', 'cut', 'selectstart'].forEach(ev => 
+        document.addEventListener(ev, (e) => e.preventDefault())
+    );
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   🔒 CONSOLE SÉCURISÉE
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    (function() {
-        console.log('%c🛡️ OlysaCheck - Système de Protection Actif', 'color: #0052cc; font-size: 20px; font-weight: bold;');
-        console.log('%c⚠️ ATTENTION: Site protégé par OlysaCheck', 'color: #ff0000; font-size: 16px; font-weight: bold;');
-        console.log('%c🔐 Protection multi-couches activée', 'color: #00875a; font-size: 14px; font-weight: bold;');
-        console.log('%c  ✓ Cloudflare Turnstile', 'color: #0052cc;');
-        console.log('%c  ✓ Anti-Bot Detection', 'color: #0052cc;');
-        console.log('%c  ✓ Behavioral Analysis', 'color: #0052cc;');
-        console.log('%c  ✓ Anti-DevTools', 'color: #0052cc;');
-        console.log('%c  ✓ Anti-Copy/Paste', 'color: #0052cc;');
-        console.log('%c  ✓ Logging avancé', 'color: #0052cc;');
-        console.log('%c  🧠 Neural Security Modules', 'color: #0052cc;');
-    })();
+    // Protection images
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'IMG') e.preventDefault();
+    });
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   📊 SYSTÈME DE LOGGING
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    const SecurityLogger = {
-        events: [],
-        log: function(eventType, details = {}) {
-            const event = {
-                type: eventType,
-                timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent,
-                ...details
-            };
-            this.events.push(event);
-            try {
-                localStorage.setItem('olysacheck_security_logs', JSON.stringify(this.events.slice(-50)));
-            } catch(e) {}
-            console.warn(`🔐 Security Event: ${eventType}`, event);
-        }
-    };
-
-    function logSecurityEvent(type, details = {}) {
-        SecurityLogger.log(type, details);
-    }
-
-    window.getSecurityLogs = () => SecurityLogger.events;
+    // Anti-clickjacking
+    if (window.top !== window.self) window.top.location.href = window.self.location.href;
 
     // ═══════════════════════════════════════════════════════════════════════════
     //   🎨 WATERMARK
     // ═══════════════════════════════════════════════════════════════════════════
     
     function addWatermark() {
-        const watermark = document.createElement('div');
-        watermark.style.cssText = `
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 8px 12px;
-            background: rgba(0, 82, 204, 0.1);
-            border: 1px solid rgba(0, 82, 204, 0.2);
-            border-radius: 8px;
-            opacity: 0.6;
-            font-size: 11px;
-            color: #0052cc;
-            font-weight: 600;
-            pointer-events: none;
-            user-select: none;
-            z-index: 9999;
+        const wm = document.createElement('div');
+        wm.style.cssText = `
+            position:fixed; bottom:8px; right:8px; padding:6px 10px;
+            background:rgba(0,82,204,0.1); border-radius:6px;
+            font-size:10px; color:#0052cc; pointer-events:none; z-index:9999;
         `;
-        watermark.textContent = `🛡️ Protégé par OlysaCheck ${new Date().getFullYear()}`;
-        document.body.appendChild(watermark);
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    //   📢 ALERTES DE SÉCURITÉ
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    function showSecurityAlert(message) {
-        const alert = document.createElement('div');
-        alert.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #de350b, #ff5630);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 8px 24px rgba(222, 53, 11, 0.5);
-            z-index: 100000;
-            max-width: 350px;
-            animation: alertSlideIn 0.3s ease;
-        `;
-        
-        alert.textContent = message;
-        document.body.appendChild(alert);
-        
-        setTimeout(() => {
-            alert.style.animation = 'alertSlideOut 0.3s ease';
-            setTimeout(() => alert.remove(), 300);
-        }, 3000);
-        
-        if (!document.getElementById('alert-animations')) {
-            const style = document.createElement('style');
-            style.id = 'alert-animations';
-            style.textContent = `
-                @keyframes alertSlideIn {
-                    from { transform: translateX(400px); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes alertSlideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(400px); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
+        wm.textContent = `🛡️ OlysaCheck`;
+        document.body.appendChild(wm);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
     //   🚀 INITIALISATION
     // ═══════════════════════════════════════════════════════════════════════════
     
-    window.addEventListener('DOMContentLoaded', function() {
-        initCloudflare();
-        logSecurityEvent('system_initialized', { version: '3.0.0' });
-    });
-
-    window.addEventListener('load', function() {
+    window.addEventListener('DOMContentLoaded', initCloudflare);
+    window.addEventListener('load', () => {
         addWatermark();
-        document.body.setAttribute('data-security', 'olysacheck-protected');
-        console.log('%c✅ Système de protection OlysaCheck activé !', 'color: #00875a; font-size: 14px; font-weight: bold;');
+        document.body.setAttribute('data-security', 'active');
+        console.log('%c✅ OlysaCheck Protection Active', 'color: #0052cc; font-weight: bold;');
     });
 
 })();
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//   ✍️ FONCTION D'INSCRIPTION PAR EMAIL (FIREBASE)
-// ═══════════════════════════════════════════════════════════════════════════════
-(function() {
-    // Charger Firebase dynamiquement si pas déjà présent
-    function loadFirebaseAndInit() {
-        if (typeof firebase !== 'undefined') {
-            initFirebaseAndListen();
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        script.onload = function() {
-            const firestoreScript = document.createElement('script');
-            firestoreScript.src = 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-            firestoreScript.onload = initFirebaseAndListen;
-            document.head.appendChild(firestoreScript);
-        };
-        document.head.appendChild(script);
-    }
-
-    function initFirebaseAndListen() {
-        // 🔧 REMPLACEZ CES VALEURS PAR CELLES DE VOTRE PROJET FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyBYHmmhHUaazXwbEbiEHYl0JgNUWKn6fuQ",                // <-- À remplacer
-            authDomain: "olysacheck.firebaseapp.com",        // <-- À remplacer
-            projectId: "olysacheck",          // <-- À remplacer
-            storageBucket: "olysacheck.firebasestorage.app",  // <-- À remplacer
-            messagingSenderId: "45624836935", // <-- À remplacer
-            appId: "1:45624836935:web:0cab6668ebf2aa63c04262"                    // <-- À remplacer
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-
-        const db = firebase.firestore();
-
-        // Détecter le clic sur tous les boutons
-        document.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', async function onClickHandler(event) {
-                // Empêcher toute action par défaut
-                event.preventDefault();
-
-                // Récupérer l'input de type email
-                const emailInput = document.querySelector('input[type="email"]');
-                if (!emailInput) {
-                    console.error('❌ Aucun champ email trouvé');
-                    alert('Veuillez entrer votre email');
-                    return;
-                }
-
-                const email = emailInput.value.trim();
-                if (!email || !isValidEmail(email)) {
-                    alert('Veuillez entrer un email valide');
-                    return;
-                }
-
-                try {
-                    // Enregistrement dans Firestore
-                    await db.collection('users').add({
-                        email: email,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    console.log('✅ Email enregistré avec succès');
-                    window.location.href = 'auth.html'; // Redirection après succès
-                } catch (error) {
-                    console.error('❌ Erreur lors de l\'enregistrement:', error);
-                    alert('Erreur lors de l\'inscription. Veuillez réessayer.');
-                }
-            });
-        });
-
-        function isValidEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-    }
-
-    // Lancer le chargement une fois le DOM prêt
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadFirebaseAndInit);
-    } else {
-        loadFirebaseAndInit();
-    }
-})();
+// Firebase supprimé - Version 3.2.0 ultra optimisée
