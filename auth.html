@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OlysaCheck - Authentification</title>   <!-- Majuscule -->
+    <title>OlysaCheck - Authentification</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -354,7 +354,7 @@
 </head>
 <body>
     <header>
-        <div class="logo">OlysaCheck</div>   <!-- Majuscule -->
+        <div class="logo">OlysaCheck</div>
         <div class="user-menu">
             <div class="user-info" id="userInfo">
                 <span class="user-email" id="userEmail"></span>
@@ -366,7 +366,7 @@
     <main>
         <div class="auth-container" id="authContainer">
             <div class="auth-header">
-                <h1>OlysaCheck</h1>   <!-- Majuscule -->
+                <h1>OlysaCheck</h1>
                 <p class="subtitle">Plateforme professionnelle de gestion</p>
             </div>
 
@@ -379,7 +379,7 @@
 
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="loginEmail">Adresse e-mail</label>   <!-- orthographe -->
+                    <label for="loginEmail">Adresse e-mail</label>
                     <input type="email" id="loginEmail" required autocomplete="email">
                 </div>
                 <div class="form-group">
@@ -395,7 +395,7 @@
                     <input type="text" id="registerName" required autocomplete="name">
                 </div>
                 <div class="form-group">
-                    <label for="registerEmail">Adresse e-mail</label>   <!-- orthographe -->
+                    <label for="registerEmail">Adresse e-mail</label>
                     <input type="email" id="registerEmail" required autocomplete="email">
                 </div>
                 <div class="form-group">
@@ -410,7 +410,7 @@
             </form>
 
             <div class="dashboard" id="dashboard">
-                <h2>Bienvenue sur OlysaCheck</h2>   <!-- Majuscule -->
+                <h2>Bienvenue sur OlysaCheck</h2>
                 <p>Vous êtes connecté avec succès</p>
                 <p class="welcome-email" id="welcomeEmail"></p>
             </div>
@@ -418,12 +418,11 @@
     </main>
 
     <script>
-        // ═══════════════════════════════════════════════════════════════
-        //   TON SCRIPT ORIGINAL – COMPLÈTEMENT CONSERVÉ (rien supprimé)
-        //   J'AI JUSTE AJOUTÉ LES FONCTIONS DE SÉCURITÉ AU DESSUS
-        // ═══════════════════════════════════════════════════════════════
+        // ============================================
+        // FONCTIONS DE HACHAGE ET VALIDATION
+        // ============================================
 
-        // 🔐 AJOUT SÉCURISÉ : Hachage des mots de passe (Web Crypto API)
+        // Hachage des mots de passe (Web Crypto API)
         async function hashPassword(password, salt) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password + salt);
@@ -438,13 +437,16 @@
             return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ✅ Validation d'email (complément)
+        // Validation d'email
         function isValidEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
         }
 
-        // Gestion de l'état de l'application (légèrement modifié pour utiliser le hachage)
+        // ============================================
+        // APPLICATION PRINCIPALE
+        // ============================================
+
         const app = {
             currentUser: null,
 
@@ -462,31 +464,26 @@
             },
 
             setupEventListeners() {
-                // Tabs
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
                 });
 
-                // Forms
                 document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
                 document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
                 document.getElementById('btnLogout').addEventListener('click', () => this.handleLogout());
             },
 
             switchTab(tabName) {
-                // Update active tab
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.classList.toggle('active', tab.dataset.tab === tabName);
                 });
 
-                // Show/hide forms
                 document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
                 document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
                 
                 this.hideMessage();
             },
 
-            // 🔒 CONNEXION SÉCURISÉE (avec hash)
             async handleLogin(e) {
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value.trim();
@@ -504,7 +501,6 @@
                     return;
                 }
 
-                // Hachage du mot de passe saisi avec le sel stocké
                 const hash = await hashPassword(password, user.salt);
                 if (hash === user.hash) {
                     this.currentUser = { name: user.name, email: user.email };
@@ -516,7 +512,6 @@
                 }
             },
 
-            // 🔒 INSCRIPTION SÉCURISÉE (avec hash)
             async handleRegister(e) {
                 e.preventDefault();
                 const name = document.getElementById('registerName').value.trim();
@@ -550,11 +545,9 @@
                     return;
                 }
 
-                // Générer un sel et hacher le mot de passe
                 const salt = generateSalt();
                 const hash = await hashPassword(password, salt);
 
-                // Stocker l'utilisateur avec sel et hash
                 users.push({ name, email, salt, hash });
                 localStorage.setItem('olysacheck_users', JSON.stringify(users));
 
@@ -580,7 +573,6 @@
                 document.getElementById('dashboard').classList.add('active');
                 document.getElementById('welcomeEmail').textContent = this.currentUser.email;
                 
-                // Afficher le menu utilisateur
                 document.getElementById('userInfo').classList.add('active');
                 document.getElementById('userEmail').textContent = this.currentUser.email;
             },
@@ -592,7 +584,6 @@
                 document.getElementById('userInfo').classList.remove('active');
                 this.switchTab('login');
                 
-                // Reset forms
                 document.getElementById('loginForm').reset();
                 document.getElementById('registerForm').reset();
             },
@@ -608,7 +599,6 @@
             }
         };
 
-        // Initialiser l'application
         document.addEventListener('DOMContentLoaded', () => app.init());
     </script>
     <script src="security-protection.js"></script>

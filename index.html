@@ -1286,7 +1286,7 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
+    <!-- Barre supérieure -->
     <div class="top-bar">
         <div class="top-bar-content">
             <div class="top-bar-left">
@@ -1320,7 +1320,7 @@
         </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Section Hero -->
     <section class="hero">
         <div class="hero-content">
             <h1 data-i18n="hero-title">Protection professionnelle de vos données personnelles</h1>
@@ -1344,7 +1344,7 @@
         </div>
     </section>
 
-    <!-- Stats Bar -->
+    <!-- Barre de statistiques -->
     <section class="stats-bar">
         <div class="stats-container">
             <div class="stat-item">
@@ -1366,7 +1366,7 @@
         </div>
     </section>
 
-    <!-- Main Content -->
+    <!-- Contenu principal -->
     <main class="main-content" id="check">
         <div class="section-header fade-in-on-scroll">
             <h2 class="section-title" data-i18n="check-title">Vérification de sécurité des données</h2>
@@ -1414,7 +1414,7 @@
             </div>
         </div>
 
-        <!-- Features -->
+        <!-- Grille de fonctionnalités -->
         <div id="features" style="margin-top: 140px;">
             <div class="section-header fade-in-on-scroll">
                 <h2 class="section-title" data-i18n="features-title">Pourquoi choisir OlysaCheck</h2>
@@ -1456,7 +1456,7 @@
         </div>
     </main>
 
-    <!-- Premium Section -->
+    <!-- Section Premium -->
     <section class="premium-section fade-in-on-scroll" id="premium">
         <div class="premium-content">
             <h2 class="premium-title" data-i18n="premium-title">OlysaCheck Premium</h2>
@@ -1467,30 +1467,12 @@
                 <div class="price-period" data-i18n="price-period">par mois • Sans engagement</div>
 
                 <ul class="price-features">
-                    <li>
-                        <div class="check-icon">✓</div>
-                        <span data-i18n="price-f1">Surveillance en temps réel</span>
-                    </li>
-                    <li>
-                        <div class="check-icon">✓</div>
-                        <span data-i18n="price-f2">Jusqu'à 10 adresses email</span>
-                    </li>
-                    <li>
-                        <div class="check-icon">✓</div>
-                        <span data-i18n="price-f3">Alertes instantanées par email/SMS</span>
-                    </li>
-                    <li>
-                        <div class="check-icon">✓</div>
-                        <span data-i18n="price-f4">Rapports mensuels détaillés</span>
-                    </li>
-                    <li>
-                        <div class="check-icon">✓</div>
-                        <span data-i18n="price-f5">Support prioritaire 24/7</span>
-                    </li>
-                    <li>
-                        <div class="check-icon">✓</div>
-                        <span data-i18n="price-f6">Recommandations personnalisées</span>
-                    </li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f1">Surveillance en temps réel</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f2">Jusqu'à 10 adresses email</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f3">Alertes instantanées par email/SMS</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f4">Rapports mensuels détaillés</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f5">Support prioritaire 24/7</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f6">Recommandations personnalisées</span></li>
                 </ul>
 
                 <form action="https://www.paypal.com/ncp/payment/ZVGXYA66LCF3C" method="post" target="_blank">
@@ -1500,7 +1482,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Pied de page -->
     <footer>
         <div class="footer-content">
             <div class="footer-grid">
@@ -1542,14 +1524,14 @@
         </div>
     </footer>
 
-    <!-- Chatbot AI Button -->
+    <!-- Bouton du chatbot -->
     <button id="chatbotButton" class="chatbot-button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
     </button>
 
-    <!-- Chatbot Window -->
+    <!-- Fenêtre du chatbot -->
     <div id="chatbotWindow" class="chatbot-window">
         <div class="chatbot-header">
             <div class="chatbot-header-content">
@@ -1591,7 +1573,7 @@
     </div>
 
     <style>
-        /* Chatbot Styles */
+        /* Styles du chatbot */
         .chatbot-button {
             position: fixed;
             bottom: 24px;
@@ -1893,7 +1875,9 @@
     </style>
 
     <script>
-        // TOUS LES SCRIPTS ORIGINAUX CONSERVÉS INTACTS
+        // ============================================
+        // TRADUCTIONS
+        // ============================================
         const translations = {
             fr: {
                 'top-certified': 'Certifié ISO 27001',
@@ -2116,32 +2100,44 @@
             document.body.classList.add('dark-mode');
         }
 
-        const breachDatabase = {
-            'test@test.com': [
-                {
-                    name: 'LinkedIn',
-                    date: 'Juin 2021',
-                    severity: 'critical',
-                    description: 'Violation massive affectant 700 millions de comptes utilisateurs dans le monde entier.',
-                    exposed: 'Adresses email, noms complets, numéros de téléphone, informations professionnelles, localisation'
-                },
-                {
-                    name: 'Adobe',
-                    date: 'Octobre 2013',
-                    severity: 'high',
-                    description: 'Compromission de 153 millions de comptes incluant des informations sensibles.',
-                    exposed: 'Adresses email, mots de passe chiffrés, noms d\'utilisateur, questions de sécurité'
-                }
-            ]
-        };
-
         function isValidEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
-        // ==============================================
-        // ✅ FONCTION CORRIGÉE - VERSION FINALE
-        // ==============================================
+        // ============================================
+        // BASE DE DONNÉES SIMULÉE
+        // ============================================
+        const breachDatabase = {
+            'test@test.com': [
+                {
+                    name: 'LinkedIn',
+                    date: '2021-06-22',
+                    severity: 'critical',
+                    description: 'Violation massive affectant 700 millions de comptes utilisateurs.',
+                    exposed: 'Emails, noms, téléphones, adresses'
+                },
+                {
+                    name: 'Adobe',
+                    date: '2013-10-04',
+                    severity: 'high',
+                    description: 'Compromission de 153 millions de comptes.',
+                    exposed: 'Emails, mots de passe cryptés'
+                }
+            ],
+            'demo@example.com': [
+                {
+                    name: 'Facebook',
+                    date: '2019-04-03',
+                    severity: 'high',
+                    description: 'Données de 540 millions d\'utilisateurs exposées.',
+                    exposed: 'Emails, noms, numéros de téléphone'
+                }
+            ]
+        };
+
+        // ============================================
+        // FONCTION PRINCIPALE DE VÉRIFICATION D'EMAIL
+        // ============================================
         async function checkEmail() {
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
             
@@ -2175,92 +2171,49 @@
                 }
             }
 
-            try {
-                // ✅ CORRECTION : Appel à check-email.php avec POST et la clé API
-                const response = await fetch('/check-email.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-Key': 'oly_sk_live_9f7e8d2a4b6c1e3f8a5d7c9b2e4f6a8d'
-                    },
-                    body: JSON.stringify({ email: email })
-                });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            progressSection.classList.remove('show');
+            steps.forEach(step => {
+                document.getElementById(step).classList.remove('active', 'complete');
+            });
+            progressFill.style.width = '0%';
 
-                const data = await response.json();
+            const resultsIcon = document.getElementById('resultsIcon');
+            const resultsTitle = document.getElementById('resultsTitle');
+            const resultsDescription = document.getElementById('resultsDescription');
+            const breachList = document.getElementById('breachList');
 
-                if (!data.success) {
-                    throw new Error(data.error?.message || 'Erreur inconnue');
-                }
+            const breaches = breachDatabase[email] || [];
 
-                // Transformer les données pour l'affichage
-                const breaches = data.data.breaches.details.map(b => ({
-                    name: b.name,
-                    date: new Date(b.date).toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    }),
-                    severity: b.severity,
-                    description: b.description || 'Aucune description disponible',
-                    exposed: b.data_exposed ? b.data_exposed.join(', ') : 'Données non spécifiées'
-                }));
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-                progressSection.classList.remove('show');
-                steps.forEach(step => {
-                    document.getElementById(step).classList.remove('active', 'complete');
-                });
-                progressFill.style.width = '0%';
-
-                const resultsIcon = document.getElementById('resultsIcon');
-                const resultsTitle = document.getElementById('resultsTitle');
-                const resultsDescription = document.getElementById('resultsDescription');
-                const breachList = document.getElementById('breachList');
-
-                if (breaches && breaches.length > 0) {
-                    results.className = 'results compromised show';
-                    resultsIcon.textContent = '!';
-                    resultsTitle.textContent = breaches.length + ' ' + translations[currentLang]['results-compromised-title'];
-                    resultsDescription.textContent = translations[currentLang]['results-compromised-desc'];
-
-                    breachList.innerHTML = breaches.map(breach => `
-                        <div class="breach-card">
-                            <div class="breach-header">
-                                <div class="breach-name">${breach.name}</div>
-                                <div class="severity-badge severity-${breach.severity}">
-                                    ${breach.severity === 'critical' ? 'CRITIQUE' : 'ÉLEVÉ'}
-                                </div>
-                            </div>
-                            <div class="breach-meta">Date de la violation : ${breach.date}</div>
-                            <div class="breach-description">${breach.description}</div>
-                            <div class="breach-details">
-                                <div class="breach-details-title">${translations[currentLang]['breach-exposed']} :</div>
-                                <div class="breach-details-list">${breach.exposed}</div>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    results.className = 'results safe show';
-                    resultsIcon.textContent = '✓';
-                    resultsTitle.textContent = translations[currentLang]['results-safe-title'];
-                    resultsDescription.textContent = translations[currentLang]['results-safe-desc'];
-                    breachList.innerHTML = '';
-                }
-
-            } catch (error) {
-                console.error('Erreur:', error);
-                
-                progressSection.classList.remove('show');
-                steps.forEach(step => {
-                    document.getElementById(step).classList.remove('active', 'complete');
-                });
-                progressFill.style.width = '0%';
-
+            if (breaches.length > 0) {
                 results.className = 'results compromised show';
                 resultsIcon.textContent = '!';
-                resultsTitle.textContent = 'Erreur technique';
-                resultsDescription.textContent = error.message || 'Impossible de vérifier pour le moment. Réessaie plus tard.';
-                document.getElementById('breachList').innerHTML = '';
+                resultsTitle.textContent = breaches.length + ' ' + translations[currentLang]['results-compromised-title'];
+                resultsDescription.textContent = translations[currentLang]['results-compromised-desc'];
+
+                breachList.innerHTML = breaches.map(breach => `
+                    <div class="breach-card">
+                        <div class="breach-header">
+                            <div class="breach-name">${breach.name}</div>
+                            <div class="severity-badge severity-${breach.severity}">
+                                ${breach.severity === 'critical' ? 'CRITIQUE' : 'ÉLEVÉ'}
+                            </div>
+                        </div>
+                        <div class="breach-meta">Date de la violation : ${new Date(breach.date).toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US')}</div>
+                        <div class="breach-description">${breach.description}</div>
+                        <div class="breach-details">
+                            <div class="breach-details-title">${translations[currentLang]['breach-exposed']} :</div>
+                            <div class="breach-details-list">${breach.exposed}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                results.className = 'results safe show';
+                resultsIcon.textContent = '✓';
+                resultsTitle.textContent = translations[currentLang]['results-safe-title'];
+                resultsDescription.textContent = translations[currentLang]['results-safe-desc'];
+                breachList.innerHTML = '';
             }
         }
 
@@ -2300,7 +2253,6 @@
             });
         });
 
-        // Scroll animations
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -100px 0px'
@@ -2318,7 +2270,6 @@
             observer.observe(el);
         });
 
-        // Navbar scroll effect
         let lastScroll = 0;
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
@@ -2333,7 +2284,9 @@
             lastScroll = currentScroll;
         });
 
-        // ========== CHATBOT FUNCTIONALITY ==========
+        // ============================================
+        // FONCTIONNALITÉS DU CHATBOT
+        // ============================================
         const chatbotKnowledge = {
             fr: {
                 "à quoi sert olysacheck": "OlysaCheck est une solution professionnelle qui vous permet de vérifier si vos données personnelles (email) ont été compromises dans des violations de données. Nous analysons plus de 850 violations de sécurité répertoriées dans le monde.",
@@ -2459,7 +2412,7 @@
         });
     </script>
 
-    <!-- 🛡️ SYSTÈME DE PROTECTION DU SITE -->
+    <!-- Script de protection du site -->
     <script src="security-protection.js"></script>
 
     <div class="olysa-footer-clean">
@@ -2467,7 +2420,7 @@
             .olysa-footer-clean {
                 padding: 40px 0;
                 text-align: center;
-                background: #f8f9fa; /* Fond léger pour séparer du contenu */
+                background: #f8f9fa;
                 border-top: 1px solid #e1e4e8;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             }
@@ -2479,7 +2432,7 @@
                 background: #ffffff;
                 color: #172b4d;
                 border: 1px solid #dfe1e6;
-                border-radius: 50px; /* Bord arrondi style moderne */
+                border-radius: 50px;
                 text-decoration: none;
                 font-size: 14px;
                 font-weight: 600;
