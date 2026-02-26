@@ -269,15 +269,30 @@ class GoogleFriendlySitemapGenerator:
             
             self.stats['included_urls'] += 1
         
-        # Conversion en XML avec indentation parfaite
+        # CONVERSION XML PROPRE - CORRIGÉ
         rough_string = tostring(urlset, 'utf-8')
         reparsed = minidom.parseString(rough_string)
+        
+        # 🔧 CORRECTION : Forcer le XML à commencer par <?xml
         xml_string = reparsed.toprettyxml(indent="  ", encoding='utf-8')
         
-        # Nettoyage des lignes vides (Google n'aime pas)
-        clean_xml = b'\n'.join([line for line in xml_string.split(b'\n') if line.strip()])
+        # S'assurer que la première ligne est bien <?xml
+        lines = xml_string.decode('utf-8').split('\n')
+        cleaned_lines = []
         
-        return clean_xml
+        for line in lines:
+            # Garder toutes les lignes mais enlever les vides à la fin
+            if line.strip() or line.startswith('<?xml') or line.startswith('<'):
+                cleaned_lines.append(line.rstrip())
+        
+        # Reconstruire le XML
+        clean_xml = '\n'.join(cleaned_lines)
+        
+        # Vérification supplémentaire : supprimer les lignes vides multiples
+        import re
+        clean_xml = re.sub(r'\n\s*\n', '\n', clean_xml)
+        
+        return clean_xml.encode('utf-8')
     
     def save_sitemap(self, xml_content: bytes) -> bool:
         """Sauvegarde le sitemap en version normale et compressée"""
@@ -544,18 +559,20 @@ Host: {self.config.BASE_URL}
             # Lit les premières lignes pour vérifier le format
             with open('sitemap.xml', 'r', encoding='utf-8') as f:
                 first_line = f.readline().strip()
-                if '<?xml' in first_line:
-                    print("✅ Format XML correct")
+                if first_line.startswith('<?xml'):
+                    print("✅ Format XML correct (commence par <?xml)")
+                    print(f"   Première ligne : {first_line}")
                 else:
-                    print("❌ Le fichier ne commence pas par <?xml")
+                    print(f"❌ Problème : première ligne = {first_line}")
+                    print("   Le fichier doit commencer par <?xml")
         else:
             print("❌ sitemap.xml introuvable localement")
         
         print("\n⚠️ IMPORTANT :")
         print("1. Uploade ce fichier sur Vercel (via git ou déploiement)")
         print("2. Vérifie l'URL : https://olysacheck.vercel.app/sitemap.xml")
-        print("3. Si tu vois une page de login, configure Vercel pour servir les fichiers statiques")
-        print("\n📦 Crée un fichier vercel.json à la racine :")
+        print("3. Tu dois voir le XML, PAS une page HTML")
+        print("\n📦 Si problème, crée un fichier vercel.json à la racine :")
         print("""
 {
   "cleanUrls": true,
