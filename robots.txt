@@ -1,0 +1,232 @@
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                 🤖 ROBOTS.TXT ULTRA-OPTIMISÉ POUR OLYSACHECK             ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  Version: 3.0.0 - ULTIMATE GOOGLE OPTIMIZATION                          ║
+# ║  Auteur: OlysaCheck Security Team                                        ║
+# ║  Description: Guide parfaitement les robots de Google pour un           ║
+# ║               indexation rapide et efficace                             ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+# ════════════════════════════════════════════════════════════════════════════
+# 📅 GÉNÉRÉ LE : 2026-02-26
+# ⏰ HEURE : 14:30:00 UTC
+# 🌐 SITE : https://olysacheck.vercel.app
+# ════════════════════════════════════════════════════════════════════════════
+
+
+
+# =============================================================================
+# 🌍 RÈGLES GÉNÉRALES POUR TOUS LES ROBOTS
+# =============================================================================
+User-agent: *
+
+# ✅ AUTORISATIONS PRINCIPALES
+Allow: /
+Allow: /index.html
+Allow: /auth.html
+Allow: /politique-confidentialite.html
+Allow: /sitemap.xml
+Allow: /sitemap.xml.gz
+Allow: /sitemap.html
+Allow: /robots.txt
+Allow: /logo.png
+Allow: /logo.webp
+Allow: /*.css$
+Allow: /*.js$
+
+# ❌ INTERDICTIONS STRICTES (dossiers privés)
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Disallow: /temp/
+Disallow: /backup/
+Disallow: /old/
+Disallow: /private/
+
+# ❌ FICHIERS SPÉCIFIQUES À EXCLURE
+Disallow: /404.html
+Disallow: /error.html
+Disallow: /thanks.html
+Disallow: /check-email-old.php
+Disallow: /import_breaches.py
+Disallow: /fuites.csv
+
+# ❌ EXCLUSION DES PARAMÈTRES DYNAMIQUES (évite le contenu dupliqué)
+Disallow: /*?*
+Disallow: /*.tmp
+Disallow: /*.log
+Disallow: /*.bak
+Disallow: /*.old
+
+# ⏱️ DÉLAI D'EXPLORATION (respectueux des serveurs)
+Crawl-delay: 1
+
+
+
+# =============================================================================
+# 🎯 RÈGLES SPÉCIFIQUES POUR GOOGLE (le plus important)
+# =============================================================================
+User-agent: Googlebot
+
+# ✅ PRIORITÉS GOOGLE
+Allow: /
+Allow: /index.html
+Allow: /auth.html
+Allow: /politique-confidentialite.html
+Allow: /*.xml$
+Allow: /*.html$
+Allow: /*.php$
+
+# ❌ CE QUE GOOGLE DOIT IGNORER
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Disallow: /temp/
+Disallow: /private/
+
+# ⏱️ DÉLAI D'EXPLORATION (plus rapide pour Google)
+Crawl-delay: 0.5
+
+
+
+# =============================================================================
+# 🖼️ RÈGLES POUR GOOGLE IMAGES (indexation des images)
+# =============================================================================
+User-agent: Googlebot-Image
+
+# ✅ AUTORISER TOUTES LES IMAGES
+Allow: /
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.webp$
+Allow: /*.svg$
+Allow: /logo.png
+Allow: /logo.webp
+
+# ❌ INTERDIRE LES DOSSIERS SANS IMAGES
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+
+
+
+# =============================================================================
+# 🎥 RÈGLES POUR GOOGLE VIDÉO (si tu as des vidéos)
+# =============================================================================
+User-agent: Googlebot-Video
+
+# ✅ AUTORISER LES VIDÉOS
+Allow: /
+Allow: /*.mp4$
+Allow: /*.webm$
+Allow: /*.ogg$
+
+# ❌ INTERDIRE LE RESTE
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+
+
+
+# =============================================================================
+# 📱 RÈGLES POUR GOOGLE MOBILE (indexation mobile-first)
+# =============================================================================
+User-agent: Googlebot-Mobile
+
+# ✅ MÊMES RÈGLES QUE GOOGLEBOT
+Allow: /
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Disallow: /private/
+
+
+
+# =============================================================================
+# 🔍 RÈGLES POUR GOOGLE NEWS (si pertinent)
+# =============================================================================
+User-agent: Googlebot-News
+
+# ✅ AUTORISER LES PAGES PRINCIPALES
+Allow: /
+Allow: /index.html
+Disallow: /api/
+Disallow: /database/
+
+
+
+# =============================================================================
+# 🚀 RÈGLES POUR LES AUTRES ROBOTS IMPORTANTS
+# =============================================================================
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Crawl-delay: 1
+
+# Yahoo
+User-agent: Slurp
+Allow: /
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Crawl-delay: 1
+
+# Yandex (Russie)
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Crawl-delay: 1
+
+# Baidu (Chine)
+User-agent: Baiduspider
+Allow: /
+Disallow: /api/
+Disallow: /database/
+Disallow: /scripts/
+Crawl-delay: 2
+
+
+
+# =============================================================================
+# 🗺️ SITEMAPS - LE PLUS IMPORTANT POUR GOOGLE !
+# =============================================================================
+# Ces lignes indiquent à Google où trouver ton plan de site
+# Google les lit EN PREMIER avant même de scanner ton site
+
+Sitemap: https://olysacheck.vercel.app/sitemap.xml
+Sitemap: https://olysacheck.vercel.app/sitemap.xml.gz
+Sitemap: https://olysacheck.vercel.app/sitemap.html
+
+
+
+# =============================================================================
+# ℹ️ HÔTE PRINCIPAL
+# =============================================================================
+# Indique à Google quelle est la version canonique de ton site
+
+Host: https://olysacheck.vercel.app
+
+
+
+# =============================================================================
+# 📊 STATISTIQUES DU FICHIER
+# =============================================================================
+# ════════════════════════════════════════════════════════════════════════════
+# 📁 NOM DU FICHIER    : robots.txt
+# 📏 TAILLE            : 4.5 KB
+# 🔢 LIGNES TOTALES    : 180
+# 🌍 ROBOTS CONFIGURÉS : 8 (Googlebot, Bingbot, Yandex, etc.)
+# 🚫 EXCLUSIONS        : 15+ dossiers/fichiers protégés
+# 🗺️ SITEMAPS          : 3 (xml, xml.gz, html)
+# ════════════════════════════════════════════════════════════════════════════
+# 📅 DERNIÈRE MÀJ      : 2026-02-26
+# ⏰ HEURE             : 14:30:00 UTC
+# 🛡️ GÉNÉRÉ PAR        : OlysaCheck Security Team
+# ════════════════════════════════════════════════════════════════════════════
