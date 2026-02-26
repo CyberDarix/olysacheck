@@ -2463,5 +2463,59 @@
             OlysaCheck &copy; 2026 • Protection Certifiée Enterprise
         </p>
     </div>
+
+<!-- ===== OPTIMISATION D'IMAGES WEBP AJOUTÉE ===== -->
+<script>
+    (function() {
+        // Fonction pour vérifier si le navigateur supporte WebP
+        function supportsWebP() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            return canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
+        }
+
+        // Fonction pour charger les images WebP
+        function loadWebPImages() {
+            if (!supportsWebP()) return; // Navigateur ancien, on garde PNG
+            
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const src = img.getAttribute('src');
+                if (src && src.endsWith('.png')) {
+                    const webpSrc = src.replace('.png', '.webp');
+                    
+                    // Test si l'image WebP existe
+                    fetch(webpSrc, { method: 'HEAD' })
+                        .then(response => {
+                            if (response.ok) {
+                                img.src = webpSrc;
+                                console.log(`✅ Image optimisée: ${src} → ${webpSrc}`);
+                            }
+                        })
+                        .catch(() => {
+                            console.log(`⚠️ Image WebP non trouvée: ${webpSrc}`);
+                        });
+                }
+            });
+        }
+
+        // Instructions pour convertir les images
+        function showConversionInstructions() {
+            console.log('🖼️ Pour optimiser tes images, utilise:');
+            console.log('1. https://convertio.co/fr/png-webp/');
+            console.log('2. https://www.iloveimg.com/fr/compress-image');
+            console.log('3. Convertir logo.png en logo.webp');
+        }
+
+        // Attendre que la page soit chargée
+        window.addEventListener('load', loadWebPImages);
+        
+        console.log('🚀 Optimisation WebP activée');
+        showConversionInstructions();
+    })();
+</script>
+<!-- ===== FIN OPTIMISATION WEBP ===== -->
+
 </body>
 </html>
