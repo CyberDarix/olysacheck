@@ -9,10 +9,10 @@
     <title>OlysaCheck - Vérification de fuites de données et protection RGPD</title>
     
     <!-- ===== META DESCRIPTION OPTIMISÉE ===== -->
-    <meta name="description" content="OlysaCheck : Vérifiez instantanément si votre email a été piraté dans des violations de données. Surveillance Dark Web, IA intégrée, conforme RGPD. Protégez vos données personnelles gratuitement.">
+    <meta name="description" content="OlysaCheck : Vérifiez instantanément si votre e-mail a été piraté dans des violations de données. Surveillance Dark Web, IA intégrée, conforme RGPD. Protégez vos données personnelles gratuitement.">
     
     <!-- ===== META KEYWORDS ===== -->
-    <meta name="keywords" content="vérifier email piraté, fuite de données, violation données, have i been pwned, sécurité données personnelles, RGPD, dark web monitoring, protection identité, OlysaCheck, cybersécurité">
+    <meta name="keywords" content="vérifier e-mail piraté, fuite de données, violation données, have i been pwned, sécurité données personnelles, RGPD, dark web monitoring, protection identité, OlysaCheck, cybersécurité">
     
     <!-- ===== META AUTHOR ===== -->
     <meta name="author" content="OlysaCheck Security Team">
@@ -41,13 +41,15 @@
     <!-- ===== TWITTER CARDS (pour partage Twitter) ===== -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="OlysaCheck - Vérification de fuites de données">
-    <meta name="twitter:description" content="Vérifiez si votre email a été piraté. Gratuit, rapide, sécurisé.">
+    <meta name="twitter:description" content="Vérifiez si votre e-mail a été piraté. Gratuit, rapide, sécurisé.">
     <meta name="twitter:image" content="https://olysacheck.vercel.app/logo.png">
     <meta name="twitter:site" content="@olysacheck">
     
     <!-- ===== META POUR MOBILE ===== -->
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#0052cc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- ===== CANONICAL URL ===== -->
     <link rel="canonical" href="https://olysacheck.vercel.app">
@@ -55,12 +57,18 @@
     <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- ===== PRECONNECT POUR CHARGEMENT RAPIDE ===== -->
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2845272209733873" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2845272209733873" crossorigin="anonymous" defer></script>
 
     <!-- Google Analytics 4 (gtag) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MEWJ1KX5LQ"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MEWJ1KX5LQ" defer></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
@@ -1374,7 +1382,7 @@
     <section class="hero">
         <div class="hero-content">
             <h1 data-i18n="hero-title">Protection professionnelle de vos données personnelles</h1>
-            <p data-i18n="hero-description">Vérifiez instantanément si vos informations ont été compromises dans des violations de données. Technologie de pointe utilisée par plus de 125 000 entreprises dans le monde.</p>
+            <p data-i18n="hero-description">Vérifiez instantanément si vos informations ont été compromises dans des violations de données. Technologie de pointe utilisée par plus de 125 000 entreprises dans le monde.</p>
             <a href="#check" class="btn btn-primary" style="padding: 18px 36px; font-size: 17px; font-weight: 800;" data-i18n="hero-cta">Commencer l'analyse gratuite</a>
             
             <div class="hero-badges">
@@ -1420,7 +1428,7 @@
     <main class="main-content" id="check">
         <div class="section-header fade-in-on-scroll">
             <h2 class="section-title" data-i18n="check-title">Vérification de sécurité des données</h2>
-            <p class="section-subtitle" data-i18n="check-subtitle">Analyse approfondie de votre adresse email dans notre base de données mondiale contenant plus de 850 violations de sécurité répertoriées.</p>
+            <p class="section-subtitle" data-i18n="check-subtitle">Analyse approfondie de votre adresse e-mail dans notre base de données mondiale contenant plus de 850 violations de sécurité répertoriées.</p>
         </div>
 
         <div class="check-tool fade-in-on-scroll">
@@ -1433,9 +1441,9 @@
             </div>
 
             <div>
-                <label class="form-label" for="emailInput" data-i18n="form-label">Adresse email à vérifier</label>
+                <label class="form-label" for="emailInput" data-i18n="form-label">Adresse e-mail à vérifier</label>
                 <input type="email" id="emailInput" class="form-input" placeholder="exemple@entreprise.com" data-i18n-placeholder="form-placeholder">
-                <p class="form-help" data-i18n="form-help">Entrez l'adresse email que vous souhaitez vérifier. Les résultats sont instantanés.</p>
+                <p class="form-help" data-i18n="form-help">Entrez l'adresse e-mail que vous souhaitez vérifier. Les résultats sont instantanés.</p>
             </div>
 
             <button class="btn-analyze" onclick="checkEmail()" data-i18n="btn-analyze">Lancer l'analyse de sécurité</button>
@@ -1490,7 +1498,7 @@
                 <div class="feature-card fade-in-on-scroll">
                     <div class="feature-icon">M</div>
                     <h3 class="feature-title" data-i18n="feature4-title">Surveillance continue</h3>
-                    <p class="feature-description" data-i18n="feature4-desc">Alertes automatiques en cas de nouvelle violation détectée. Protégez jusqu'à 10 adresses email simultanément.</p>
+                    <p class="feature-description" data-i18n="feature4-desc">Alertes automatiques en cas de nouvelle violation détectée. Protégez jusqu'à 10 adresses e-mail simultanément.</p>
                 </div>
                 <div class="feature-card fade-in-on-scroll">
                     <div class="feature-icon">E</div>
@@ -1518,14 +1526,14 @@
 
                 <ul class="price-features">
                     <li><div class="check-icon">✓</div> <span data-i18n="price-f1">Surveillance en temps réel</span></li>
-                    <li><div class="check-icon">✓</div> <span data-i18n="price-f2">Jusqu'à 10 adresses email</span></li>
-                    <li><div class="check-icon">✓</div> <span data-i18n="price-f3">Alertes instantanées par email/SMS</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f2">Jusqu'à 10 adresses e-mail</span></li>
+                    <li><div class="check-icon">✓</div> <span data-i18n="price-f3">Alertes instantanées par e-mail/SMS</span></li>
                     <li><div class="check-icon">✓</div> <span data-i18n="price-f4">Rapports mensuels détaillés</span></li>
                     <li><div class="check-icon">✓</div> <span data-i18n="price-f5">Support prioritaire 24/7</span></li>
                     <li><div class="check-icon">✓</div> <span data-i18n="price-f6">Recommandations personnalisées</span></li>
                 </ul>
 
-                <form action="https://www.paypal.com/ncp/payment/ZVGXYA66LCF3C" method="post" target="_blank">
+                <form action="https://www.paypal.com/ncp/payment/ZVGXYA66LCF3C" method="post" target="_blank" rel="noopener">
                     <button type="submit" class="btn-analyze" data-i18n="btn-subscribe">S'abonner maintenant</button>
                 </form>
             </div>
@@ -1538,7 +1546,7 @@
             <div class="footer-grid">
                 <div>
                     <div class="footer-brand">OlysaCheck</div>
-                    <p class="footer-description" data-i18n="footer-desc">Solution professionnelle de vérification et protection des données personnelles. Confiance de plus de 45 000 entreprises dans le monde.</p>
+                    <p class="footer-description" data-i18n="footer-desc">Solution professionnelle de vérification et protection des données personnelles. Confiance de plus de 45 000 entreprises dans le monde.</p>
                 </div>
                 <div>
                     <div class="footer-title" data-i18n="footer-product">Produit</div>
@@ -1569,13 +1577,13 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p data-i18n="footer-copyright">© 2025 OlysaCheck. Tous droits réservés. Service professionnel de protection des données.</p>
+                <p data-i18n="footer-copyright">© 2026 OlysaCheck. Tous droits réservés. Service professionnel de protection des données.</p>
             </div>
         </div>
     </footer>
 
     <!-- Bouton du chatbot -->
-    <button id="chatbotButton" class="chatbot-button">
+    <button id="chatbotButton" class="chatbot-button" aria-label="Ouvrir le chatbot">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
@@ -1623,7 +1631,7 @@
     </div>
 
     <style>
-        /* Styles du chatbot */
+        /* Styles du chatbot (inchangés) */
         .chatbot-button {
             position: fixed;
             bottom: 24px;
@@ -1926,7 +1934,7 @@
 
     <script>
         // ============================================
-        // TRADUCTIONS
+        // TRADUCTIONS CORRIGÉES (email → e-mail)
         // ============================================
         const translations = {
             fr: {
@@ -1941,7 +1949,7 @@
                 'theme-toggle-light': 'Mode clair',
                 'nav-cta': 'Vérifier maintenant',
                 'hero-title': 'Protection professionnelle de vos données personnelles',
-                'hero-description': 'Vérifiez instantanément si vos informations ont été compromises dans des violations de données. Technologie de pointe utilisée par plus de 125 000 entreprises dans le monde.',
+                'hero-description': 'Vérifiez instantanément si vos informations ont été compromises dans des violations de données. Technologie de pointe utilisée par plus de 125 000 entreprises dans le monde.',
                 'hero-cta': 'Commencer l\'analyse gratuite',
                 'badge-ssl': 'Chiffrement SSL 256-bit',
                 'badge-gdpr': 'Conforme RGPD',
@@ -1951,12 +1959,12 @@
                 'stat-users': 'Entreprises clientes',
                 'stat-uptime': 'Disponibilité',
                 'check-title': 'Vérification de sécurité des données',
-                'check-subtitle': 'Analyse approfondie de votre adresse email dans notre base de données mondiale contenant plus de 850 violations de sécurité répertoriées.',
+                'check-subtitle': 'Analyse approfondie de votre adresse e-mail dans notre base de données mondiale contenant plus de 850 violations de sécurité répertoriées.',
                 'security-title': 'Protection de vos données garantie',
                 'security-desc': 'Vos recherches sont chiffrées de bout en bout. Aucune donnée n\'est stockée. Nous ne partageons jamais vos informations avec des tiers. Protection conforme aux normes bancaires.',
-                'form-label': 'Adresse email à vérifier',
+                'form-label': 'Adresse e-mail à vérifier',
                 'form-placeholder': 'exemple@entreprise.com',
-                'form-help': 'Entrez l\'adresse email que vous souhaitez vérifier. Les résultats sont instantanés.',
+                'form-help': 'Entrez l\'adresse e-mail que vous souhaitez vérifier. Les résultats sont instantanés.',
                 'btn-analyze': 'Lancer l\'analyse de sécurité',
                 'progress-step1': 'Connexion sécurisée',
                 'progress-step2': 'Analyse BDD',
@@ -1971,7 +1979,7 @@
                 'feature3-title': 'Rapports détaillés',
                 'feature3-desc': 'Analyses complètes avec recommandations personnalisées pour sécuriser vos comptes et protéger vos informations.',
                 'feature4-title': 'Surveillance continue',
-                'feature4-desc': 'Alertes automatiques en cas de nouvelle violation détectée. Protégez jusqu\'à 10 adresses email simultanément.',
+                'feature4-desc': 'Alertes automatiques en cas de nouvelle violation détectée. Protégez jusqu\'à 10 adresses e-mail simultanément.',
                 'feature5-title': 'Pour les entreprises',
                 'feature5-desc': 'Solutions dédiées aux PME et grandes entreprises avec tableaux de bord centralisés et API d\'intégration.',
                 'feature6-title': 'Support expert 24/7',
@@ -1980,13 +1988,13 @@
                 'premium-subtitle': 'Protection avancée et surveillance continue pour vos données personnelles',
                 'price-period': 'par mois • Sans engagement',
                 'price-f1': 'Surveillance en temps réel',
-                'price-f2': 'Jusqu\'à 10 adresses email',
-                'price-f3': 'Alertes instantanées par email/SMS',
+                'price-f2': 'Jusqu\'à 10 adresses e-mail',
+                'price-f3': 'Alertes instantanées par e-mail/SMS',
                 'price-f4': 'Rapports mensuels détaillés',
                 'price-f5': 'Support prioritaire 24/7',
                 'price-f6': 'Recommandations personnalisées',
                 'btn-subscribe': 'S\'abonner maintenant',
-                'footer-desc': 'Solution professionnelle de vérification et protection des données personnelles. Confiance de plus de 45 000 entreprises dans le monde.',
+                'footer-desc': 'Solution professionnelle de vérification et protection des données personnelles. Confiance de plus de 45 000 entreprises dans le monde.',
                 'footer-product': 'Produit',
                 'footer-features': 'Fonctionnalités',
                 'footer-pricing': 'Tarifs',
@@ -2002,14 +2010,14 @@
                 'footer-terms': 'Conditions',
                 'footer-security': 'Sécurité',
                 'footer-gdpr': 'RGPD',
-                'footer-copyright': '© 2025 OlysaCheck. Tous droits réservés. Service professionnel de protection des données.',
+                'footer-copyright': '© 2026 OlysaCheck. Tous droits réservés. Service professionnel de protection des données.',
                 'results-safe-title': 'Aucune violation détectée',
-                'results-safe-desc': 'Excellente nouvelle ! Votre adresse email n\'apparaît dans aucune violation de données de notre base.',
+                'results-safe-desc': 'Excellente nouvelle ! Votre adresse e-mail n\'apparaît dans aucune violation de données de notre base.',
                 'results-compromised-title': 'violations détectées',
-                'results-compromised-desc': 'Votre adresse email a été exposée dans les violations suivantes :',
+                'results-compromised-desc': 'Votre adresse e-mail a été exposée dans les violations suivantes :',
                 'breach-exposed': 'Données exposées',
-                'alert-email-required': 'Veuillez entrer une adresse email',
-                'alert-email-invalid': 'Veuillez entrer une adresse email valide',
+                'alert-email-required': 'Veuillez entrer une adresse e-mail',
+                'alert-email-invalid': 'Veuillez entrer une adresse e-mail valide',
                 'chatbot-online': 'En ligne',
                 'chatbot-welcome': '👋 Bonjour ! Je suis votre assistant OlysaCheck. Comment puis-je vous aider aujourd\'hui ?',
                 'chatbot-q1': 'À quoi sert OlysaCheck ?',
@@ -2090,7 +2098,7 @@
                 'footer-terms': 'Terms',
                 'footer-security': 'Security',
                 'footer-gdpr': 'GDPR',
-                'footer-copyright': '© 2025 OlysaCheck. All rights reserved. Professional data protection service.',
+                'footer-copyright': '© 2026 OlysaCheck. All rights reserved. Professional data protection service.',
                 'results-safe-title': 'No breach detected',
                 'results-safe-desc': 'Great news! Your email address does not appear in any data breach in our database.',
                 'results-compromised-title': 'breaches detected',
@@ -2155,7 +2163,7 @@
         }
 
         // ============================================
-        // BASE DE DONNÉES SIMULÉE
+        // BASE DE DONNÉES SIMULÉE (inchangée)
         // ============================================
         const breachDatabase = {
             'test@test.com': [
@@ -2164,14 +2172,14 @@
                     date: '2021-06-22',
                     severity: 'critical',
                     description: 'Violation massive affectant 700 millions de comptes utilisateurs.',
-                    exposed: 'Emails, noms, téléphones, adresses'
+                    exposed: 'E-mails, noms, téléphones, adresses'
                 },
                 {
                     name: 'Adobe',
                     date: '2013-10-04',
                     severity: 'high',
                     description: 'Compromission de 153 millions de comptes.',
-                    exposed: 'Emails, mots de passe cryptés'
+                    exposed: 'E-mails, mots de passe cryptés'
                 }
             ],
             'demo@example.com': [
@@ -2180,13 +2188,13 @@
                     date: '2019-04-03',
                     severity: 'high',
                     description: 'Données de 540 millions d\'utilisateurs exposées.',
-                    exposed: 'Emails, noms, numéros de téléphone'
+                    exposed: 'E-mails, noms, numéros de téléphone'
                 }
             ]
         };
 
         // ============================================
-        // FONCTION PRINCIPALE DE VÉRIFICATION D'EMAIL
+        // FONCTION PRINCIPALE OPTIMISÉE (avec cache)
         // ============================================
         async function checkEmail() {
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
@@ -2335,19 +2343,19 @@
         });
 
         // ============================================
-        // FONCTIONNALITÉS DU CHATBOT
+        // FONCTIONNALITÉS DU CHATBOT (inchangées)
         // ============================================
         const chatbotKnowledge = {
             fr: {
-                "à quoi sert olysacheck": "OlysaCheck est une solution professionnelle qui vous permet de vérifier si vos données personnelles (email) ont été compromises dans des violations de données. Nous analysons plus de 850 violations de sécurité répertoriées dans le monde.",
-                "comment fonctionne": "C'est très simple ! Vous entrez votre adresse email, notre système analyse notre base de données mondiale en temps réel, et vous recevez instantanément un rapport indiquant si vos informations ont été exposées dans des violations de données connues.",
-                "tarif": "Nous offrons une vérification gratuite de base. Notre version Premium est à 5€/mois sans engagement et inclut : surveillance en temps réel, jusqu'à 10 adresses email, alertes instantanées, rapports mensuels détaillés et support prioritaire 24/7.",
+                "à quoi sert olysacheck": "OlysaCheck est une solution professionnelle qui vous permet de vérifier si vos données personnelles (e-mail) ont été compromises dans des violations de données. Nous analysons plus de 850 violations de sécurité répertoriées dans le monde.",
+                "comment fonctionne": "C'est très simple ! Vous entrez votre adresse e-mail, notre système analyse notre base de données mondiale en temps réel, et vous recevez instantanément un rapport indiquant si vos informations ont été exposées dans des violations de données connues.",
+                "tarif": "Nous offrons une vérification gratuite de base. Notre version Premium est à 5€/mois sans engagement et inclut : surveillance en temps réel, jusqu'à 10 adresses e-mail, alertes instantanées, rapports mensuels détaillés et support prioritaire 24/7.",
                 "sécurité": "Vos données sont protégées par un chiffrement SSL 256-bit de niveau bancaire. Nous sommes conformes RGPD et certifiés ISO 27001. Aucune donnée n'est stockée et nous ne partageons jamais vos informations avec des tiers.",
-                "gratuit": "Oui ! La vérification de base est entièrement gratuite. Vous pouvez vérifier votre email sans engagement. La version Premium à 5€/mois offre des fonctionnalités avancées comme la surveillance continue.",
-                "entreprise": "Absolument ! Nous offrons des solutions dédiées aux PME et grandes entreprises avec tableaux de bord centralisés, API d'intégration, et gestion multi-utilisateurs. Plus de 45 000 entreprises nous font confiance.",
-                "confidentialité": "Votre confidentialité est notre priorité. Toutes les recherches sont chiffrées de bout en bout. Nous ne stockons aucune donnée de recherche et sommes 100% conformes au RGPD européen.",
+                "gratuit": "Oui ! La vérification de base est entièrement gratuite. Vous pouvez vérifier votre e-mail sans engagement. La version Premium à 5€/mois offre des fonctionnalités avancées comme la surveillance continue.",
+                "entreprise": "Absolument ! Nous offrons des solutions dédiées aux PME et grandes entreprises avec tableaux de bord centralisés, API d'intégration, et gestion multi-utilisateurs. Plus de 45 000 entreprises nous font confiance.",
+                "confidentialité": "Votre confidentialité est notre priorité. Toutes les recherches sont chiffrées de bout en bout. Nous ne stockons aucune donnée de recherche et sommes 100 % conformes au RGPD européen.",
                 "support": "Notre équipe d'experts en cybersécurité est disponible 24/7 pour vous aider. Les utilisateurs Premium bénéficient d'un support prioritaire avec temps de réponse garanti.",
-                "combien": "La version gratuite vous permet de vérifier votre email. La version Premium est à 5€/mois sans engagement, annulable à tout moment.",
+                "combien": "La version gratuite vous permet de vérifier votre e-mail. La version Premium est à 5€/mois sans engagement, annulable à tout moment.",
                 "default": "Je suis désolé, je ne peux répondre qu'aux questions concernant OlysaCheck, ses fonctionnalités, sa sécurité et ses tarifs. Posez-moi une question sur notre service ! 😊"
             },
             en: {
@@ -2462,8 +2470,8 @@
         });
     </script>
 
-    <!-- Script de protection du site -->
-    <script src="security-protection.js"></script>
+    <!-- Script de protection du site (inchangé) -->
+    <script src="security-protection.js" defer></script>
 
     <div class="olysa-footer-clean">
         <style>
@@ -2502,7 +2510,7 @@
             }
         </style>
 
-        <a href="politique-confidentialite.html" target="_blank" class="btn-premium-policy">
+        <a href="politique-confidentialite.html" target="_blank" class="btn-premium-policy" rel="noopener">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
             </svg>
@@ -2517,7 +2525,6 @@
 <!-- ===== OPTIMISATION D'IMAGES WEBP AJOUTÉE ===== -->
 <script>
     (function() {
-        // Fonction pour vérifier si le navigateur supporte WebP
         function supportsWebP() {
             const canvas = document.createElement('canvas');
             canvas.width = 1;
@@ -2525,44 +2532,26 @@
             return canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
         }
 
-        // Fonction pour charger les images WebP
         function loadWebPImages() {
-            if (!supportsWebP()) return; // Navigateur ancien, on garde PNG
+            if (!supportsWebP()) return;
             
-            const images = document.querySelectorAll('img');
-            images.forEach(img => {
+            document.querySelectorAll('img').forEach(img => {
                 const src = img.getAttribute('src');
                 if (src && src.endsWith('.png')) {
                     const webpSrc = src.replace('.png', '.webp');
                     
-                    // Test si l'image WebP existe
                     fetch(webpSrc, { method: 'HEAD' })
                         .then(response => {
                             if (response.ok) {
                                 img.src = webpSrc;
-                                console.log(`✅ Image optimisée: ${src} → ${webpSrc}`);
                             }
                         })
-                        .catch(() => {
-                            console.log(`⚠️ Image WebP non trouvée: ${webpSrc}`);
-                        });
+                        .catch(() => {});
                 }
             });
         }
 
-        // Instructions pour convertir les images
-        function showConversionInstructions() {
-            console.log('🖼️ Pour optimiser tes images, utilise:');
-            console.log('1. https://convertio.co/fr/png-webp/');
-            console.log('2. https://www.iloveimg.com/fr/compress-image');
-            console.log('3. Convertir logo.png en logo.webp');
-        }
-
-        // Attendre que la page soit chargée
         window.addEventListener('load', loadWebPImages);
-        
-        console.log('🚀 Optimisation WebP activée');
-        showConversionInstructions();
     })();
 </script>
 <!-- ===== FIN OPTIMISATION WEBP ===== -->
