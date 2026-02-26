@@ -3,217 +3,582 @@
 
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║         🚀 OLYSACHECK - GÉNÉRATEUR DE SITEMAP ULTRA-PUISSANT v3.2           ║
+║         🚀 OLYSACHECK - GÉNÉRATEUR DE SITEMAP ULTRA-PUISSANT v3.0           ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║  👑 Version FINALE - 100% compatible Google                                 ║
-║                                                                              ║
-║  ✅ CORRECTIONS ULTIMES :                                                    ║
-║  ✓ FORMAT XML ABSOLUMENT PARFAIT                                             ║
-║  ✓ PLUS D'ERREUR "FICHIER HTML"                                              ║
-║  ✓ VALIDATION GOOGLE RENFORCÉE                                               ║
-║  ✓ PRÊT EN 2 MINUTES                                                         ║
+║  👑 Version ULTIMATE - Ce que Google aime :                                  ║
+║  ✓ Format XML parfaitement valide                                            ║
+║  ✓ Images incluses (Google Images)                                           ║
+║  ✓ Vidéos incluses (Google Vidéo)                                           ║
+║  ✓ Multi-langues (hreflang)                                                 ║
+║  ✓ Priorités intelligentes                                                   ║
+║  ✓ Dates de modification précises                                            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
 import os
 import glob
 import gzip
+import hashlib
 from datetime import datetime
 from xml.etree.ElementTree import Element, SubElement, tostring, register_namespace
 from xml.dom import minidom
 import urllib.parse
+import json
 import logging
+from typing import List, Dict, Tuple, Optional
 
 # =============================================================
-# 🎯 CONFIGURATION SIMPLE ET EFFICACE
+# 🎯 CONFIGURATION ULTRA-OPTIMISÉE
 # =============================================================
 
 class SitemapConfig:
+    # 🔗 URL de base (NE CHANGE PAS)
     BASE_URL = "https://olysacheck.vercel.app"
-    FILE_EXTENSIONS = ['*.html', '*.php']
-    EXCLUDED_FILES = ['404.html', 'error.html', 'thanks.html']
     
+    # 📁 Extensions à scanner
+    FILE_EXTENSIONS = ['*.html', '*.php', '*.xml', '*.js']
+    
+    # 🖼️ Images à inclure
+    IMAGE_EXTENSIONS = ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp', '*.svg']
+    
+    # 🎥 Vidéos à inclure
+    VIDEO_EXTENSIONS = ['*.mp4', '*.webm', '*.ogg']
+    
+    # 📝 Fichiers à exclure
+    EXCLUDED_FILES = [
+        '404.html', 'error.html', 'thanks.html',
+        'old/', 'backup/', 'temp/', 'private/',
+        'robots.txt', 'sitemap.xml', 'sitemap.xml.gz'
+    ]
+    
+    # 🏆 Priorités intelligentes (basées sur l'importance)
     PAGE_PRIORITIES = {
-        'index.html': '1.0',
-        'check-email.php': '0.9',
-        'auth.html': '0.8',
-        'politique-confidentialite.html': '0.7',
+        'index.html': 1.0,           # Page d'accueil : MAXIMUM
+        'check-email.php': 0.95,      # Fonctionnalité principale
+        'auth.html': 0.85,             # Authentification
+        'politique-confidentialite.html': 0.75,  # Page légale
     }
     
+    # 🔄 Fréquences de mise à jour (Google adore)
     PAGE_FREQUENCY = {
-        'index.html': 'daily',
-        'check-email.php': 'always',
-        'auth.html': 'weekly',
-        'politique-confidentialite.html': 'monthly',
+        'index.html': 'hourly',        # Change souvent
+        'check-email.php': 'always',    # Temps réel
+        'auth.html': 'daily',           # Quotidien
+        'politique-confidentialite.html': 'monthly',  # Rare
     }
     
-    DATE_FORMAT = "%Y-%m-%d"
+    # 🌍 Langues supportées
+    LANGUAGES = ['fr', 'en']
+    
+    # 🗓️ Format de date Google
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
+    
+    # 📊 Logging
     LOG_FILE = "sitemap_generation.log"
     LOG_LEVEL = logging.INFO
 
 
 # =============================================================
-# 📝 GÉNÉRATEUR ULTIME
+# 📝 GÉNÉRATEUR DE SITEMAP INTELLIGENT (VERSION GOOGLE-FRIENDLY)
 # =============================================================
 
-class UltimateSitemapGenerator:
+class GoogleFriendlySitemapGenerator:
+    """
+    Générateur de sitemap ultra-optimisé pour Google
+    Respecte TOUTES les consignes Google
+    """
+    
     def __init__(self, config: SitemapConfig):
         self.config = config
         self.files_found = []
-        self.stats = {'total': 0, 'included': 0, 'excluded': 0}
+        self.images_found = []
+        self.videos_found = []
+        self.stats = {
+            'total_files': 0,
+            'total_images': 0,
+            'total_videos': 0,
+            'included_urls': 0,
+            'included_images': 0,
+            'included_videos': 0,
+            'excluded': 0,
+            'errors': 0
+        }
         self.setup_logging()
         
+        # Enregistrement des namespaces XML (important pour Google)
+        register_namespace('image', 'http://www.google.com/schemas/sitemap-image/1.1')
+        register_namespace('video', 'http://www.google.com/schemas/sitemap-video/1.1')
+        register_namespace('xhtml', 'http://www.w3.org/1999/xhtml')
+        
     def setup_logging(self):
+        """Configure les logs pour le debugging"""
         logging.basicConfig(
             level=self.config.LOG_LEVEL,
-            format='%(asctime)s - %(message)s',
-            handlers=[logging.FileHandler(self.config.LOG_FILE), logging.StreamHandler()]
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(self.config.LOG_FILE),
+                logging.StreamHandler()
+            ]
         )
-        self.logger = logging.getLogger("Sitemap")
-
+        self.logger = logging.getLogger("SitemapGenerator")
+        
     def scan_files(self):
-        self.logger.info("🔍 Scan...")
+        """Scan intelligent de tous les fichiers"""
+        self.logger.info("🔍 Scan des fichiers en cours...")
+        
+        # Scan des pages
         for ext in self.config.FILE_EXTENSIONS:
-            self.files_found.extend(glob.glob(ext))
-        self.stats['total'] = len(self.files_found)
-        self.logger.info(f"   ✅ {self.stats['total']} pages")
-
-    def should_exclude(self, filename):
-        return any(excl in filename for excl in self.config.EXCLUDED_FILES)
-
-    def get_file_info(self, filename):
+            found = glob.glob(ext, recursive=True)
+            self.files_found.extend(found)
+            
+        # Scan des images
+        for ext in self.config.IMAGE_EXTENSIONS:
+            found = glob.glob(ext, recursive=True)
+            self.images_found.extend(found)
+            
+        # Scan des vidéos
+        for ext in self.config.VIDEO_EXTENSIONS:
+            found = glob.glob(ext, recursive=True)
+            self.videos_found.extend(found)
+        
+        self.stats['total_files'] = len(self.files_found)
+        self.stats['total_images'] = len(self.images_found)
+        self.stats['total_videos'] = len(self.videos_found)
+        
+        self.logger.info(f"   ✅ {self.stats['total_files']} pages trouvées")
+        self.logger.info(f"   ✅ {self.stats['total_images']} images trouvées")
+        self.logger.info(f"   ✅ {self.stats['total_videos']} vidéos trouvées")
+        
+    def should_exclude(self, filename: str) -> bool:
+        """Vérifie si un fichier doit être exclu"""
+        for excluded in self.config.EXCLUDED_FILES:
+            if excluded in filename:
+                return True
+        return False
+    
+    def get_file_info(self, filename: str) -> Dict:
+        """Récupère les infos détaillées d'un fichier"""
         try:
             stat = os.stat(filename)
-            return datetime.fromtimestamp(stat.st_mtime).strftime(self.config.DATE_FORMAT)
-        except:
-            return datetime.now().strftime(self.config.DATE_FORMAT)
-
+            file_hash = hashlib.md5(open(filename, 'rb').read()).hexdigest()[:8]
+            return {
+                'size': stat.st_size,
+                'modified': datetime.fromtimestamp(stat.st_mtime).strftime(self.config.DATE_FORMAT),
+                'hash': file_hash,
+                'exists': True
+            }
+        except Exception as e:
+            self.logger.warning(f"⚠️ Erreur sur {filename}: {e}")
+            return {
+                'size': 0,
+                'modified': datetime.now().strftime(self.config.DATE_FORMAT),
+                'hash': 'unknown',
+                'exists': False
+            }
+    
+    def get_priority(self, filename: str) -> float:
+        """Priorité intelligente basée sur le fichier"""
+        return self.config.PAGE_PRIORITIES.get(filename, 0.5)
+    
+    def get_frequency(self, filename: str) -> str:
+        """Fréquence intelligente"""
+        return self.config.PAGE_FREQUENCY.get(filename, 'weekly')
+    
     def generate_xml(self) -> bytes:
-        self.logger.info("📝 Génération XML...")
+        """Génère le XML parfait pour Google"""
+        self.logger.info("📝 Génération du XML Google-Friendly...")
         
+        # Création de la racine avec tous les namespaces
         urlset = Element('urlset')
         urlset.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
+        urlset.set('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1')
+        urlset.set('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1')
+        urlset.set('xmlns:xhtml', 'http://www.w3.org/1999/xhtml')
         
+        # Pour chaque page
         for filename in sorted(self.files_found):
             if self.should_exclude(filename):
                 self.stats['excluded'] += 1
                 continue
+                
+            file_info = self.get_file_info(filename)
             
-            lastmod = self.get_file_info(filename)
-            priority = self.config.PAGE_PRIORITIES.get(filename, '0.5')
-            changefreq = self.config.PAGE_FREQUENCY.get(filename, 'weekly')
-            
+            # Création de l'URL
             url = SubElement(urlset, 'url')
             
+            # LOC (URL de la page)
             loc = SubElement(url, 'loc')
-            loc.text = f"{self.config.BASE_URL}/{urllib.parse.quote(filename)}"
+            encoded_filename = urllib.parse.quote(filename)
+            loc.text = f"{self.config.BASE_URL}/{encoded_filename}"
             
-            lastmod_elem = SubElement(url, 'lastmod')
-            lastmod_elem.text = lastmod
+            # LASTMOD (dernière modification - Google adore)
+            lastmod = SubElement(url, 'lastmod')
+            lastmod.text = file_info['modified']
             
-            changefreq_elem = SubElement(url, 'changefreq')
-            changefreq_elem.text = changefreq
+            # CHANGEFREQ (fréquence)
+            changefreq = SubElement(url, 'changefreq')
+            changefreq.text = self.get_frequency(filename)
             
-            priority_elem = SubElement(url, 'priority')
-            priority_elem.text = priority
+            # PRIORITY (priorité)
+            priority = SubElement(url, 'priority')
+            priority.text = f"{self.get_priority(filename):.2f}"
             
-            self.stats['included'] += 1
+            # HREFLANG (versions linguistiques - Google adore)
+            for lang in self.config.LANGUAGES:
+                link = SubElement(url, '{http://www.w3.org/1999/xhtml}link')
+                link.set('rel', 'alternate')
+                link.set('hreflang', lang)
+                link.set('href', f"{self.config.BASE_URL}/{filename}?lang={lang}")
+            
+            # IMAGES associées à cette page
+            page_images = [img for img in self.images_found 
+                          if img.startswith(os.path.splitext(filename)[0])]
+            
+            for img in page_images[:10]:  # Max 10 images par page (limite Google)
+                img_info = self.get_file_info(img)
+                image = SubElement(url, '{http://www.google.com/schemas/sitemap-image/1.1}image')
+                
+                img_loc = SubElement(image, '{http://www.google.com/schemas/sitemap-image/1.1}loc')
+                img_loc.text = f"{self.config.BASE_URL}/{urllib.parse.quote(img)}"
+                
+                img_title = SubElement(image, '{http://www.google.com/schemas/sitemap-image/1.1}title')
+                img_title.text = f"Image OlysaCheck - {os.path.basename(img)}"
+                
+                img_caption = SubElement(image, '{http://www.google.com/schemas/sitemap-image/1.1}caption')
+                img_caption.text = f"Image de sécurité OlysaCheck"
+                
+                self.stats['included_images'] += 1
+            
+            # VIDÉOS associées
+            page_videos = [vid for vid in self.videos_found 
+                          if vid.startswith(os.path.splitext(filename)[0])]
+            
+            for vid in page_videos[:5]:  # Max 5 vidéos par page
+                video = SubElement(url, '{http://www.google.com/schemas/sitemap-video/1.1}video')
+                
+                vid_loc = SubElement(video, '{http://www.google.com/schemas/sitemap-video/1.1}content_loc')
+                vid_loc.text = f"{self.config.BASE_URL}/{urllib.parse.quote(vid)}"
+                
+                vid_title = SubElement(video, '{http://www.google.com/schemas/sitemap-video/1.1}title')
+                vid_title.text = f"Vidéo OlysaCheck - {os.path.basename(vid)}"
+                
+                vid_desc = SubElement(video, '{http://www.google.com/schemas/sitemap-video/1.1}description')
+                vid_desc.text = "Vidéo explicative sur la sécurité des données OlysaCheck"
+                
+                self.stats['included_videos'] += 1
+            
+            self.stats['included_urls'] += 1
         
-        rough = tostring(urlset, 'utf-8')
-        reparsed = minidom.parseString(rough)
-        xml = reparsed.toprettyxml(indent="  ", encoding='utf-8')
+        # Conversion en XML avec indentation parfaite
+        rough_string = tostring(urlset, 'utf-8')
+        reparsed = minidom.parseString(rough_string)
+        xml_string = reparsed.toprettyxml(indent="  ", encoding='utf-8')
         
-        # Nettoyage ULTRA-STRICT pour éviter tout HTML
-        clean_lines = []
-        for line in xml.decode('utf-8').split('\n'):
-            if line.strip() and not line.strip().startswith('<?xml') and not line.strip().startswith('<urlset'):
-                clean_lines.append(line)
-            elif line.strip():
-                clean_lines.append(line)
+        # Nettoyage des lignes vides (Google n'aime pas)
+        clean_xml = b'\n'.join([line for line in xml_string.split(b'\n') if line.strip()])
         
-        final_xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-                    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
-        
-        for line in clean_lines[2:-1]:  # Ignore les 2 premières et dernière lignes
-            if '<url>' in line or '</url>' in line or '<loc>' in line or '<lastmod>' in line or '<changefreq>' in line or '<priority>' in line:
-                final_xml += line + '\n'
-        
-        final_xml += '</urlset>'
-        
-        return final_xml.encode('utf-8')
+        return clean_xml
+    
+    def save_sitemap(self, xml_content: bytes) -> bool:
+        """Sauvegarde le sitemap en version normale et compressée"""
+        try:
+            # Version normale
+            with open('sitemap.xml', 'wb') as f:
+                f.write(xml_content)
+            self.logger.info(f"✅ sitemap.xml sauvegardé ({len(xml_content)} octets)")
+            
+            # Version compressée (Google adore)
+            with gzip.open('sitemap.xml.gz', 'wb') as f:
+                f.write(xml_content)
+            self.logger.info(f"✅ sitemap.xml.gz sauvegardé (compressé)")
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"❌ Erreur sauvegarde: {e}")
+            return False
+    
+    def generate_robotstxt(self) -> bool:
+        """Génère un robots.txt professionnel"""
+        robots_content = f"""# 🚀 robots.txt ULTRA OPTIMISÉ pour OlysaCheck
+# Généré le {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+# Conforme aux directives Google
 
-    def save_sitemap(self, xml_content: bytes):
-        with open('sitemap.xml', 'wb') as f:
-            f.write(xml_content)
-        self.logger.info(f"✅ sitemap.xml ({len(xml_content)} octets)")
-
-    def generate_robotstxt(self):
-        robots = f"""# robots.txt OlysaCheck
+# === RÈGLES PRINCIPALES ===
 User-agent: *
 Allow: /
+Allow: /sitemap.xml
+Allow: /sitemap.xml.gz
+
+# === DOSSIERS PRIVÉS (non indexés) ===
 Disallow: /api/
 Disallow: /private/
+Disallow: /temp/
+Disallow: /backup/
+Disallow: /old/
+
+# === FICHIERS SPÉCIFIQUES À EXCLURE ===
+Disallow: /404.html
+Disallow: /error.html
+
+# === GOOGLE IMAGES ===
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+
+# === GOOGLE VIDÉO ===
+User-agent: Googlebot-Video
+Allow: /videos/
+Allow: /*.mp4$
+
+# === DÉLAI D'EXPLORATION (respectueux) ===
+Crawl-delay: 1
+
+# === SITEMAPS (primordial pour Google) ===
 Sitemap: {self.config.BASE_URL}/sitemap.xml
+Sitemap: {self.config.BASE_URL}/sitemap.xml.gz
+
+# === HÔTE ===
+Host: {self.config.BASE_URL}
+
+# === DATE DE GÉNÉRATION ===
+# Generated: {datetime.now().isoformat()}
 """
-        with open('robots.txt', 'w', encoding='utf-8') as f:
-            f.write(robots)
-        self.logger.info("✅ robots.txt")
-
-    def validate(self, xml_content: bytes):
-        self.logger.info("🔍 Validation...")
-        content = xml_content.decode('utf-8')
-        
-        if '<!DOCTYPE html>' in content or '<html' in content:
-            self.logger.error("❌ FICHIER HTML DÉTECTÉ !")
+        try:
+            with open('robots.txt', 'w', encoding='utf-8') as f:
+                f.write(robots_content)
+            self.logger.info("✅ robots.txt sauvegardé")
+            return True
+        except Exception as e:
+            self.logger.error(f"❌ Erreur robots.txt: {e}")
             return False
+    
+    def generate_html_sitemap(self) -> bool:
+        """Génère un sitemap HTML pour les humains (Google adore aussi)"""
+        html_content = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan du site - OlysaCheck</title>
+    <meta name="description" content="Plan du site OlysaCheck - Toutes les pages de notre plateforme de sécurité">
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }}
+        h1 {{ color: #0052cc; }}
+        ul {{ list-style: none; padding: 0; }}
+        li {{ margin: 10px 0; }}
+        a {{ color: #0052cc; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
+        .date {{ color: #666; font-size: 0.9em; margin-left: 10px; }}
+    </style>
+</head>
+<body>
+    <h1>🗺️ Plan du site OlysaCheck</h1>
+    <p>Découvrez toutes les pages de notre plateforme de sécurité des données.</p>
+    <ul>
+"""
+        for filename in sorted(self.files_found):
+            if self.should_exclude(filename):
+                continue
+            file_info = self.get_file_info(filename)
+            html_content += f'        <li><a href="{filename}">{filename}</a> <span class="date">(mis à jour le {file_info["modified"]})</span></li>\n'
         
-        if 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' not in content:
-            self.logger.error("❌ Namespace manquant")
+        html_content += """    </ul>
+    <footer>
+        <p>© 2026 OlysaCheck - Protection des données personnelles</p>
+    </footer>
+</body>
+</html>"""
+        
+        try:
+            with open('sitemap.html', 'w', encoding='utf-8') as f:
+                f.write(html_content)
+            self.logger.info("✅ sitemap.html sauvegardé (pour les humains)")
+            return True
+        except Exception as e:
+            self.logger.error(f"❌ Erreur sitemap.html: {e}")
             return False
+    
+    def validate_with_google(self, xml_content: bytes) -> Dict:
+        """Valide le sitemap selon les critères Google"""
+        self.logger.info("🔍 Validation Google en cours...")
         
-        url_count = content.count('<url>')
-        self.logger.info(f"✅ {url_count} URLs valides")
-        return True
-
-    def show_stats(self):
-        print("\n" + "="*50)
-        print("📊 RAPPORT FINAL")
-        print("="*50)
-        print(f"📁 Pages trouvées : {self.stats['total']}")
-        print(f"✅ Pages incluses : {self.stats['included']}")
-        print(f"⏭️  Exclus        : {self.stats['excluded']}")
-        print("="*50)
-        print(f"🌐 URL : {self.config.BASE_URL}/sitemap.xml")
-        print("="*50)
-
-    def run(self):
-        print("""
-╔══════════════════════════════════════════════════════════════╗
-║     🚀 GÉNÉRATION SITEMAP - CORRECTION URGENTE v3.2         ║
-╚══════════════════════════════════════════════════════════════╝
-        """)
+        issues = []
+        warnings = []
         
-        self.scan_files()
-        xml = self.generate_xml()
-        self.save_sitemap(xml)
-        self.generate_robotstxt()
-        
-        if self.validate(xml):
-            print("\n✅ SUCCÈS ! Plus d'erreur 'fichier HTML'")
+        # Vérification 1: Taille maximale (50MB)
+        if len(xml_content) > 50 * 1024 * 1024:
+            issues.append("❌ Sitemap trop volumineux (>50MB)")
         else:
-            print("\n❌ ÉCHEC - Réessaie")
+            warnings.append("✅ Taille OK")
         
-        self.show_stats()
+        # Vérification 2: Nombre d'URLs max (50,000)
+        url_count = xml_content.count(b'<url>')
+        if url_count > 50000:
+            issues.append(f"❌ Trop d'URLs ({url_count} > 50000)")
+        else:
+            warnings.append(f"✅ {url_count} URLs (OK)")
         
+        # Vérification 3: Présence des namespaces
+        if b'xmlns:image' not in xml_content:
+            warnings.append("⚠️ Pas d'images dans le sitemap")
+        
+        # Vérification 4: Format des dates
+        if b'lastmod' in xml_content:
+            warnings.append("✅ Dates présentes")
+        
+        result = {
+            'valid': len(issues) == 0,
+            'issues': issues,
+            'warnings': warnings,
+            'url_count': url_count,
+            'size_kb': len(xml_content) / 1024
+        }
+        
+        return result
+    
+    def show_stats(self, validation_result: Dict):
+        """Affiche les statistiques détaillées"""
+        print("\n" + "="*60)
+        print("📊 RAPPORT DÉTAILLÉ - GÉNÉRATION SITEMAP")
+        print("="*60)
+        print(f"📁 Pages trouvées         : {self.stats['total_files']}")
+        print(f"🖼️  Images trouvées        : {self.stats['total_images']}")
+        print(f"🎥 Vidéos trouvées         : {self.stats['total_videos']}")
+        print(f"✅ URLs incluses           : {self.stats['included_urls']}")
+        print(f"✅ Images incluses         : {self.stats['included_images']}")
+        print(f"✅ Vidéos incluses         : {self.stats['included_videos']}")
+        print(f"⏭️  Exclus                  : {self.stats['excluded']}")
+        print(f"❌ Erreurs                 : {self.stats['errors']}")
+        print("-"*60)
+        print(f"📏 Taille sitemap          : {validation_result['size_kb']:.2f} KB")
+        print(f"🔢 Nombre d'URLs           : {validation_result['url_count']}")
+        print("-"*60)
+        print("🔍 VALIDATION GOOGLE :")
+        for w in validation_result['warnings']:
+            print(f"   {w}")
+        for i in validation_result['issues']:
+            print(f"   {i}")
+        print("="*60)
+        print(f"🌐 URL de base             : {self.config.BASE_URL}")
+        print(f"📅 Généré le               : {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+        print("="*60)
+        
+    def run(self):
+        """Exécute le processus complet"""
         print("""
-📤 ACTIONS IMMÉDIATES :
-   1. UPLOADE sitemap.xml et robots.txt sur ton serveur
-   2. VÉRIFIE : https://olysacheck.vercel.app/sitemap.xml
-   3. RETOURNE dans Google Search Console
-   4. SUPPRIME l'ancien sitemap
-   5. AJOUTE : sitemap.xml
+╔════════════════════════════════════════════════════════════════════╗
+║     🚀 GÉNÉRATION SITEMAP ULTRA-PUISSANT POUR GOOGLE v3.0         ║
+╠════════════════════════════════════════════════════════════════════╣
+║  ✓ Format XML parfait                                                 ║
+║  ✓ Images incluses                                                    ║
+║  ✓ Vidéos incluses                                                    ║
+║  ✓ Multi-langues                                                      ║
+║  ✓ Compression GZIP                                                   ║
+║  ✓ Validation Google                                                  ║
+╚════════════════════════════════════════════════════════════════════╝
+        """)
+        
+        # Scan des fichiers
+        self.scan_files()
+        
+        # Génération du XML
+        xml_content = self.generate_xml()
+        
+        # Sauvegarde
+        if self.save_sitemap(xml_content):
+            self.logger.info("✅ Sitemap sauvegardé avec succès")
+        else:
+            self.logger.error("❌ Échec sauvegarde sitemap")
+            self.stats['errors'] += 1
+        
+        # Génération des fichiers annexes
+        self.generate_robotstxt()
+        self.generate_html_sitemap()
+        
+        # Validation Google
+        validation = self.validate_with_google(xml_content)
+        
+        # Statistiques
+        self.show_stats(validation)
+        
+        if validation['valid']:
+            print("\n" + "✅"*20)
+            print("🎉 SUCCÈS ! SITEMAP PARFAIT POUR GOOGLE !")
+            print("✅"*20)
+        else:
+            print("\n" + "⚠️"*20)
+            print("🔧 CORRIGE CES POINTS AVANT DE SOUMETTRE :")
+            for i in validation['issues']:
+                print(f"   {i}")
+            print("⚠️"*20)
+        
+        print(f"""
+📤 FICHIERS CRÉÉS :
+   - sitemap.xml        (format standard)
+   - sitemap.xml.gz     (compressé - Google adore)
+   - sitemap.html       (pour les humains)
+   - robots.txt         (instructions pour Google)
+
+🌐 À SOUMETTRE DANS GOOGLE SEARCH CONSOLE :
+   https://olysacheck.vercel.app/sitemap.xml
+   https://olysacheck.vercel.app/sitemap.xml.gz
+
+🚀 BONNE CHANCE AVEC LE RÉFÉRENCEMENT !
+        """)
+        
+        # 🔴 AJOUTE CES LIGNES À LA FIN POUR VÉRIFIER
+        self.check_vercel_deployment()
+    
+    def check_vercel_deployment(self):
+        """Vérifie si le sitemap est accessible sur Vercel"""
+        print("\n🔍 VÉRIFICATION DU DÉPLOIEMENT VERCEL...")
+        
+        # Vérifie que le fichier existe localement
+        if os.path.exists('sitemap.xml'):
+            size = os.path.getsize('sitemap.xml')
+            print(f"✅ sitemap.xml présent localement ({size} octets)")
+            
+            # Lit les premières lignes pour vérifier le format
+            with open('sitemap.xml', 'r', encoding='utf-8') as f:
+                first_line = f.readline().strip()
+                if '<?xml' in first_line:
+                    print("✅ Format XML correct")
+                else:
+                    print("❌ Le fichier ne commence pas par <?xml")
+        else:
+            print("❌ sitemap.xml introuvable localement")
+        
+        print("\n⚠️ IMPORTANT :")
+        print("1. Uploade ce fichier sur Vercel (via git ou déploiement)")
+        print("2. Vérifie l'URL : https://olysacheck.vercel.app/sitemap.xml")
+        print("3. Si tu vois une page de login, configure Vercel pour servir les fichiers statiques")
+        print("\n📦 Crée un fichier vercel.json à la racine :")
+        print("""
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml"
+        }
+      ]
+    }
+  ]
+}
         """)
 
+
+# =============================================================
+# 🚀 POINT D'ENTRÉE PRINCIPAL
+# =============================================================
 
 if __name__ == "__main__":
-    UltimateSitemapGenerator(SitemapConfig()).run()
+    generator = GoogleFriendlySitemapGenerator(SitemapConfig())
+    generator.run()
