@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api.py": {
+    "api_validator.py": {
       "runtime": "python3.9"
     }
   }
