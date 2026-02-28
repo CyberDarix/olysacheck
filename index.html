@@ -287,6 +287,10 @@
             align-items: center;
         }
 
+        .nav-menu li {
+            position: relative;
+        }
+
         .nav-menu a {
             text-decoration: none;
             color: var(--neutral-700);
@@ -315,6 +319,37 @@
 
         .nav-menu a:hover::after {
             width: 100%;
+        }
+
+        /* Nouveau bouton API dans le menu */
+        .nav-menu .api-link {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            padding: 8px 18px;
+            border-radius: 30px;
+            margin-left: 10px;
+            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+        }
+
+        .nav-menu .api-link a {
+            color: white;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-menu .api-link a::after {
+            display: none;
+        }
+
+        .nav-menu .api-link a:hover {
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .nav-menu .api-link svg {
+            width: 16px;
+            height: 16px;
         }
 
         .nav-actions {
@@ -1291,6 +1326,98 @@
             opacity: 0.7;
         }
 
+        /* Loader Overlay */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .loader-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: white;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .loader-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 900;
+            color: white;
+            box-shadow: 0 0 30px rgba(0, 82, 204, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .loader-text {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, white, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .loader-subtext {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .loader-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .loader-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-light));
+            animation: loaderProgress 2s ease infinite;
+        }
+
+        @keyframes loaderProgress {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         /* Responsive */
         @media (max-width: 968px) {
             .hero h1 {
@@ -1344,6 +1471,18 @@
     </style>
 </head>
 <body>
+    <!-- Loader Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-content">
+            <div class="loader-icon">O</div>
+            <div class="loader-text">OlysaCheck API</div>
+            <div class="loader-subtext">Préparation de votre espace développeur</div>
+            <div class="loader-bar">
+                <div class="loader-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Barre supérieure -->
     <div class="top-bar">
         <div class="top-bar-content">
@@ -1370,6 +1509,14 @@
                 <li><a href="#features" data-i18n="nav-features">Fonctionnalités</a></li>
                 <li><a href="#premium" data-i18n="nav-pricing">Tarifs</a></li>
                 <li><a href="#about" data-i18n="nav-about">À propos</a></li>
+                <li class="api-link">
+                    <a href="#" onclick="goToApiPage(); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        API
+                    </a>
+                </li>
             </ul>
             <div class="nav-actions">
                 <button class="btn btn-secondary" onclick="toggleTheme()" data-i18n="theme-toggle">Mode sombre</button>
@@ -2160,6 +2307,26 @@
 
         function isValidEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // ============================================
+        // FONCTION DE REDIRECTION VERS API AVEC LOADER
+        // ============================================
+        function goToApiPage() {
+            const loader = document.getElementById('loaderOverlay');
+            
+            // Afficher le loader
+            loader.classList.add('show');
+            
+            // Désactiver le bouton pendant le chargement
+            const button = event.currentTarget;
+            button.style.pointerEvents = 'none';
+            button.style.opacity = '0.7';
+            
+            // Redirection après 2 secondes (temps du loader)
+            setTimeout(() => {
+                window.location.href = 'api-payment.html';
+            }, 2000);
         }
 
         // ============================================
