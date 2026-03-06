@@ -1,7 +1,0 @@
-requests
-beautifulsoup4
-pymysql
-numpy
-pandas
-scikit-learn
-joblib
