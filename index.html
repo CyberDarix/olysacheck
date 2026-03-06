@@ -2330,38 +2330,12 @@
         }
 
         // ============================================
-        // BASE DE DONNÉES SIMULÉE (inchangée)
+        // BASE DE DONNÉES SIMULÉE (supprimée - maintenant on utilise la vraie base)
         // ============================================
-        const breachDatabase = {
-            'test@test.com': [
-                {
-                    name: 'LinkedIn',
-                    date: '2021-06-22',
-                    severity: 'critical',
-                    description: 'Violation massive affectant 700 millions de comptes utilisateurs.',
-                    exposed: 'E-mails, noms, téléphones, adresses'
-                },
-                {
-                    name: 'Adobe',
-                    date: '2013-10-04',
-                    severity: 'high',
-                    description: 'Compromission de 153 millions de comptes.',
-                    exposed: 'E-mails, mots de passe cryptés'
-                }
-            ],
-            'demo@example.com': [
-                {
-                    name: 'Facebook',
-                    date: '2019-04-03',
-                    severity: 'high',
-                    description: 'Données de 540 millions d\'utilisateurs exposées.',
-                    exposed: 'E-mails, noms, numéros de téléphone'
-                }
-            ]
-        };
+        // const breachDatabase = { ... }  // Supprimé
 
         // ============================================
-        // FONCTION PRINCIPALE OPTIMISÉE (avec cache)
+        // FONCTION PRINCIPALE - CONNECTÉE À LA VRAIE BASE TIDB CLOUD
         // ============================================
         async function checkEmail() {
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
@@ -2378,10 +2352,13 @@
 
             const progressSection = document.getElementById('progressSection');
             const results = document.getElementById('results');
+            const statusText = document.getElementById('statusText');
             
             results.classList.remove('show');
             progressSection.classList.add('show');
+            statusText.textContent = '🔍 Vérification en cours...';
 
+            // Animation de progression
             const steps = ['step1', 'step2', 'step3', 'step4'];
             const progressFill = document.getElementById('progressFill');
 
@@ -2396,49 +2373,73 @@
                 }
             }
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            progressSection.classList.remove('show');
-            steps.forEach(step => {
-                document.getElementById(step).classList.remove('active', 'complete');
-            });
-            progressFill.style.width = '0%';
+            try {
+                // Appel à l'API Vercel (ou Render) pour interroger TiDB Cloud
+                const response = await fetch('https://ton-api-url.com/api/check-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
 
-            const resultsIcon = document.getElementById('resultsIcon');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsDescription = document.getElementById('resultsDescription');
-            const breachList = document.getElementById('breachList');
+                const data = await response.json();
 
-            const breaches = breachDatabase[email] || [];
+                progressSection.classList.remove('show');
+                steps.forEach(step => {
+                    document.getElementById(step).classList.remove('active', 'complete');
+                });
+                progressFill.style.width = '0%';
 
-            if (breaches.length > 0) {
-                results.className = 'results compromised show';
-                resultsIcon.textContent = '!';
-                resultsTitle.textContent = breaches.length + ' ' + translations[currentLang]['results-compromised-title'];
-                resultsDescription.textContent = translations[currentLang]['results-compromised-desc'];
-
-                breachList.innerHTML = breaches.map(breach => `
-                    <div class="breach-card">
-                        <div class="breach-header">
-                            <div class="breach-name">${breach.name}</div>
-                            <div class="severity-badge severity-${breach.severity}">
-                                ${breach.severity === 'critical' ? 'CRITIQUE' : 'ÉLEVÉ'}
+                if (data.success && data.breaches && data.breaches.length > 0) {
+                    // Email trouvé dans des fuites
+                    results.className = 'results compromised show';
+                    document.getElementById('resultsIcon').textContent = '!';
+                    document.getElementById('resultsTitle').textContent = 
+                        `${data.breaches.length} violation(s) détectée(s)`;
+                    document.getElementById('resultsDescription').textContent = 
+                        'Votre adresse e-mail a été exposée dans les violations suivantes :';
+                    
+                    // Afficher les détails des fuites
+                    const breachList = document.getElementById('breachList');
+                    breachList.innerHTML = data.breaches.map(breach => `
+                        <div class="breach-card">
+                            <div class="breach-header">
+                                <div class="breach-name">${breach.name || 'Inconnu'}</div>
+                                <div class="severity-badge severity-${breach.severity || 'medium'}">
+                                    ${(breach.severity || 'medium').toUpperCase()}
+                                </div>
+                            </div>
+                            <div class="breach-meta">Date : ${breach.date || 'Inconnue'}</div>
+                            <div class="breach-description">${breach.description || 'Aucune description'}</div>
+                            <div class="breach-details">
+                                <div class="breach-details-title">Données exposées :</div>
+                                <div class="breach-details-list">${breach.exposed || 'Non spécifié'}</div>
                             </div>
                         </div>
-                        <div class="breach-meta">Date de la violation : ${new Date(breach.date).toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US')}</div>
-                        <div class="breach-description">${breach.description}</div>
-                        <div class="breach-details">
-                            <div class="breach-details-title">${translations[currentLang]['breach-exposed']} :</div>
-                            <div class="breach-details-list">${breach.exposed}</div>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                results.className = 'results safe show';
-                resultsIcon.textContent = '✓';
-                resultsTitle.textContent = translations[currentLang]['results-safe-title'];
-                resultsDescription.textContent = translations[currentLang]['results-safe-desc'];
-                breachList.innerHTML = '';
+                    `).join('');
+                    
+                    statusText.textContent = '⚠️ Attention : email compromis !';
+                } else {
+                    // Email sécurisé
+                    results.className = 'results safe show';
+                    document.getElementById('resultsIcon').textContent = '✓';
+                    document.getElementById('resultsTitle').textContent = 
+                        translations[currentLang]['results-safe-title'];
+                    document.getElementById('resultsDescription').textContent = 
+                        translations[currentLang]['results-safe-desc'];
+                    document.getElementById('breachList').innerHTML = '';
+                    
+                    statusText.textContent = '✅ Email sécurisé - Aucune fuite détectée';
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                progressSection.classList.remove('show');
+                statusText.textContent = '❌ Erreur de connexion à la base de données';
+                
+                // Message d'erreur (optionnel)
+                alert('Impossible de vérifier l\'email pour le moment. Veuillez réessayer plus tard.');
             }
         }
 
